@@ -1,0 +1,9 @@
+//Comments test
+
+int main(void) {
+    int x;   // comment
+    int y;/*
+    comment
+    */string z;
+    string z;// comment
+}
