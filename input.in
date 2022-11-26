@@ -1,3 +1,11 @@
 int main(void) {
-    int x;
+    int x;   //asffo
+    
+    string z;// ok
+    /* picovina
+    */int x;
+    string p;
+    p="Aaaaa";
+    string q;
+    q="\"yolo";
 }
