@@ -2,7 +2,7 @@ grammar vypa;
 
 /* Rules */
 
-program: (function_definition | class_definition)+
+program: (function_definition | class_definition)* function_definition (function_definition | class_definition)*
        ;
 
 /* Class definition */
