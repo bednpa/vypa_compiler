@@ -3,6 +3,7 @@ grammar vypa;
 /* Rules */
 
 program: (function_definition | class_definition)+
+       ;
 
 /* Class definition */
 
@@ -20,6 +21,7 @@ function_definition: type ID LEFT_PARANTHESES_SMOOTH (param_list | VOID) RIGHT_P
                    ;
 
 param_list: data_type ID (COMMA data_type ID)*
+          ;
 
 type: data_type 
     | VOID
@@ -29,8 +31,8 @@ data_type: prim_type
          | ID
          ;
 
-prim_type: INT
-         | STRING
+prim_type: INT_TYPE
+         | STRING_TYPE
          ;
 
 /* Statements */
@@ -73,7 +75,7 @@ stmt_return: RETURN (expression)? SEMICOLON
 expression: LEFT_PARANTHESES_SMOOTH expression RIGHT_PARANTHESES_SMOOTH
           | NEW ID
           | (casting | stmt_func_call)
-          | (stmt_method_call | (THIS | SUPER | ID) DOT ID
+          | (stmt_method_call | (THIS | SUPER | ID) DOT ID)
           | NOT expression
           | expression (MULT | DIV) expression
           | expression ADD expression
@@ -82,7 +84,7 @@ expression: LEFT_PARANTHESES_SMOOTH expression RIGHT_PARANTHESES_SMOOTH
           | expression (EQ | NEQ)
           | expression AND expression
           | expression OR expression
-          | (INT | STRING | ID)
+          | (INT_VAL | STRING_VAL | ID)
           ;
 
 casting: LEFT_PARANTHESES_SMOOTH data_type RIGHT_PARANTHESES_SMOOTH expression
@@ -90,68 +92,68 @@ casting: LEFT_PARANTHESES_SMOOTH data_type RIGHT_PARANTHESES_SMOOTH expression
 
 /* Tokens */
 
-LEFT_PARANTHESES_SMOOTH: '('
-RIGHT_PARANTHESES_SMOOTH: ')'
-LEFT_PARANTHESES_SHARP: '{'
-RIGHT_PARANTHESES_SHARP: '}'
-COMMA: ','
-COLON: ':'
-SEMICOLON: ';'
-DOT: '.'
-ASSIGN: '='
-NOT: '!'
-MULT: '*'
-DIV: '/'
-ADD: '+'
-MINUS: '-'
-LESS: '<'
-LOE: '<='
-GREATER: '>'
-GOE: '>='
-EQ: '=='
-NEQ: '!='
-AND: '&&'
-OR: '||'
+LEFT_PARANTHESES_SMOOTH: '(';
+RIGHT_PARANTHESES_SMOOTH: ')';
+LEFT_PARANTHESES_SHARP: '{';
+RIGHT_PARANTHESES_SHARP: '}';
+COMMA: ',';
+COLON: ':';
+SEMICOLON: ';';
+DOT: '.';
+ASSIGN: '=';
+NOT: '!';
+MULT: '*';
+DIV: '/';
+ADD: '+';
+MINUS: '-';
+LESS: '<';
+LOE: '<=';
+GREATER: '>';
+GOE: '>=';
+EQ: '==';
+NEQ: '!=';
+AND: '&&';
+OR: '||';
 
-CLASS: 'class'
-ELSE: 'else'
-IF: 'if'
-INT: 'int'
-NEW: 'new'
-RETURN: 'return'
-STRING: 'string'
-SUPER: 'super'
-THIS: 'this'
-VOID: 'void'
-WHILE: 'while'
+CLASS: 'class';
+ELSE: 'else';
+IF: 'if';
+INT_TYPE: 'int';
+NEW: 'new';
+RETURN: 'return';
+STRING_TYPE: 'string';
+SUPER: 'super';
+THIS: 'this';
+VOID: 'void';
+WHILE: 'while';
 
-ID: (ANY_LETTER | UNDERSCORE) (ANY_LETTER | UNDERSCORE | ANY_NUMBER)*
-INTEGER: (0 | MINUS POSITIVE_DIGIT | POSITIVE_DIGIT )
-STRING: STRING_ENCLOSING (PRINTABLE_CHARACTER | ESCAPE_SEQUENCE)* STRING_ENCLOSING
+ID: (ANY_LETTER | UNDERSCORE) (ANY_LETTER | UNDERSCORE | ANY_NUMBER)*;
+INT_VAL: ('0' | MINUS POSITIVE_DIGIT | POSITIVE_DIGIT );
+STRING_VAL: STRING_ENCLOSING (PRINTABLE_CHARACTER | ESCAPE_SEQUENCE)* STRING_ENCLOSING;
 
 /* Symbols to ignore */
 
-LINE_COMMENT: FRONT_SLASH[^END_OF_LINE]* -> skip
-BLOCK_COMMENT: BLOCK_COMMENT_STARTS[^BLOCK_COMMENT_ENDS]*BLOCK_COMMENT_ENDS -> skip
-WHITE_SPACE: (SPACE | END_OF_LINE | TAB) -> skip
+BLOCK_COMMENT: BLOCK_COMMENT_STARTS .*? BLOCK_COMMENT_ENDS -> skip;
+LINE_COMMENT: FRONT_SLASH ~[\r\n]* -> skip;
+WHITE_SPACE: (SPACE | END_OF_LINE | TAB)+ -> skip;
 
 /* Auxiliary nontrivial symbols */
 
-fragment POSITIVE_DIGIT: [1-9][0-9]*
-fragment PRINTABLE_CHARACTER: [^\x22\x00-\x1f]
-fragment ESCAPE_SEQUENCE: (END_OF_LINE | TAB | BACK_SLASH | DOUBLE_QUOTES)
+fragment POSITIVE_DIGIT: [1-9][0-9]*;
+fragment PRINTABLE_CHARACTER: ~["]; /* idealne toto [^\x22\x00-\x1f] ale unicode */
+fragment ESCAPE_SEQUENCE: (END_OF_LINE | TAB | BACK_SLASH | DOUBLE_QUOTES);
 
 /* Auxiliary trivial symbols */
 
-fragment ANY_LETTER: [a-zA-Z]
-fragment ANY_NUMBER: [0-9]
-fragment END_OF_LINE: '\n'
-fragment TAB: '\t'
-fragment BACK_SLASH: '\\'
-fragment FRONT_SLASH: '//
-fragment DOUBLE_QUOTES: '\"'
-fragment BLOCK_COMMENT_STARTS: '/*'
-fragment BLOCK_COMMENT_ENDS: '*/'
-fragment STRING_ENCLOSING: '"'
-fragment SPACE: ' '
-fragment UNDERSCORE: '_'
+fragment ANY_LETTER: [a-zA-Z];
+fragment ANY_NUMBER: [0-9];
+fragment END_OF_LINE: '\n';
+fragment TAB: '\t';
+fragment BACK_SLASH: '\\';
+fragment FRONT_SLASH: '//';
+fragment DOUBLE_QUOTES: '\\"'; /* tady chci znak \" ! */
+fragment BLOCK_COMMENT_STARTS: '/*';
+fragment BLOCK_COMMENT_ENDS: '*/';
+fragment STRING_ENCLOSING: '"';
+fragment SPACE: ' ';
+fragment UNDERSCORE: '_';

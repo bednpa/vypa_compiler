@@ -1,14 +1,14 @@
 import sys
 from antlr4 import *
-from ExprLexer import ExprLexer
-from ExprParser import ExprParser
+from from_antlr.vypaLexer import vypaLexer
+from from_antlr.vypaParser import vypaParser
  
 def main(argv):
     input_stream = FileStream(argv[1])
-    lexer = ExprLexer(input_stream)
+    lexer = vypaLexer(input_stream)
     stream = CommonTokenStream(lexer)
-    parser = ExprParser(stream)
-    tree = parser.prog()
+    parser = vypaParser(stream)
+    tree = parser.program()
  
 if __name__ == '__main__':
     main(sys.argv)

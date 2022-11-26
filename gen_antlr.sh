@@ -1,0 +1,1 @@
+antlr4 -Dlanguage=Python3 vypa.g4 -visitor -o from_antlr
