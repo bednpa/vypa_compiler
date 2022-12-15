@@ -7,6 +7,11 @@
 # Class for evaluation of expressions.
 #
 class exprEval():
+    
+    
+    #
+    # Init.
+    #
     def __init__(self):
         self.stack = []
         
