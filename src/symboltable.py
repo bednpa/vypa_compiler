@@ -10,6 +10,7 @@ from tabulate import tabulate
 #
 class symbolTable:
     
+    
     #
     # Init.
     #
