@@ -1,0 +1,8 @@
+//Multiply test
+
+int main(int x, in y) {
+    int x,y;
+    x = 5 * 2 * 3;
+    int y;
+    return 0;
+}

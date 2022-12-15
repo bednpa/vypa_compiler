@@ -237,12 +237,6 @@ class vypaParser ( Parser ):
             if hasattr( listener, "exitProgram" ):
                 listener.exitProgram(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitProgram" ):
-                return visitor.visitProgram(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
 
@@ -352,12 +346,6 @@ class vypaParser ( Parser ):
             if hasattr( listener, "exitClass_definition" ):
                 listener.exitClass_definition(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitClass_definition" ):
-                return visitor.visitClass_definition(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
 
@@ -424,12 +412,6 @@ class vypaParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitDefinitions" ):
                 listener.exitDefinitions(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitDefinitions" ):
-                return visitor.visitDefinitions(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -514,12 +496,6 @@ class vypaParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitFunction_definition" ):
                 listener.exitFunction_definition(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitFunction_definition" ):
-                return visitor.visitFunction_definition(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -613,12 +589,6 @@ class vypaParser ( Parser ):
             if hasattr( listener, "exitParam_list" ):
                 listener.exitParam_list(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitParam_list" ):
-                return visitor.visitParam_list(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
 
@@ -681,12 +651,6 @@ class vypaParser ( Parser ):
             if hasattr( listener, "exitType" ):
                 listener.exitType(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitType" ):
-                return visitor.visitType(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
 
@@ -745,12 +709,6 @@ class vypaParser ( Parser ):
             if hasattr( listener, "exitData_type" ):
                 listener.exitData_type(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitData_type" ):
-                return visitor.visitData_type(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
 
@@ -807,12 +765,6 @@ class vypaParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitPrim_type" ):
                 listener.exitPrim_type(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitPrim_type" ):
-                return visitor.visitPrim_type(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -885,12 +837,6 @@ class vypaParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitStatement" ):
                 listener.exitStatement(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitStatement" ):
-                return visitor.visitStatement(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -992,12 +938,6 @@ class vypaParser ( Parser ):
             if hasattr( listener, "exitStmt_local_vars" ):
                 listener.exitStmt_local_vars(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitStmt_local_vars" ):
-                return visitor.visitStmt_local_vars(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
 
@@ -1065,12 +1005,6 @@ class vypaParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitStmt_assignment" ):
                 listener.exitStmt_assignment(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitStmt_assignment" ):
-                return visitor.visitStmt_assignment(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -1141,12 +1075,6 @@ class vypaParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitStmt_while" ):
                 listener.exitStmt_while(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitStmt_while" ):
-                return visitor.visitStmt_while(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -1231,12 +1159,6 @@ class vypaParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitStmt_func_call" ):
                 listener.exitStmt_func_call(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitStmt_func_call" ):
-                return visitor.visitStmt_func_call(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -1339,12 +1261,6 @@ class vypaParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitStmt_method_call" ):
                 listener.exitStmt_method_call(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitStmt_method_call" ):
-                return visitor.visitStmt_method_call(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -1455,12 +1371,6 @@ class vypaParser ( Parser ):
             if hasattr( listener, "exitStmt_if" ):
                 listener.exitStmt_if(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitStmt_if" ):
-                return visitor.visitStmt_if(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
 
@@ -1545,12 +1455,6 @@ class vypaParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitStmt_return" ):
                 listener.exitStmt_return(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitStmt_return" ):
-                return visitor.visitStmt_return(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -1688,12 +1592,6 @@ class vypaParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitExpression" ):
                 listener.exitExpression(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitExpression" ):
-                return visitor.visitExpression(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -1948,12 +1846,6 @@ class vypaParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitCasting" ):
                 listener.exitCasting(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitCasting" ):
-                return visitor.visitCasting(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
