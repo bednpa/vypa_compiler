@@ -1,13 +1,18 @@
 //Multiply test
 
 int main(void) {
-    int x,y;
-    if (x != y) {
+    /*int x,y;
+    if (y) { // ten if tu kazi vyhodnocovani
         int x;
-        x = 42 + y + 3 + 6 + 8; // zatim se dava 1 vzdy
+        string z;
     } else {
-        y = 42 + x; // zatim se dava 1 vzdy
+        y = 42;
     }
-    int y;
-    return 0;
+    int z;*/
+
+    int x,y;
+    y = 4;
+    x = 5 + y * 8 + 2 * 2 + 1; 
+
+    return x;
 }
