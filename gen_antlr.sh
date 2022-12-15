@@ -1,3 +1,3 @@
 #!/bin/bash
 
-antlr4 -Dlanguage=Python3 vypa.g4 -visitor -o src/from_antlr
+antlr4 -Dlanguage=Python3 vypa.g4 -o src/from_antlr
