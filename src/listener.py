@@ -1,20 +1,18 @@
+#
+# Custom class for parse tree traversal.
+#
 from from_antlr.vypaListener import vypaListener
 from from_antlr.vypaParser import vypaParser
-from symboltable import symbolTable
-
-
-symbol_table = symbolTable() # maybe move to another file
-
-
-def checkExpr(expr):
-    x = expr.getText()
-
+from auxiliary import *
 
 
 class customListener(vypaListener):
     # init
-    def __init__(self):
-        pass
+    def __init__(self, symbol_table, code_table):
+        self.symbol_table = symbol_table
+        self.code_table = code_table
+        self.expr_eval = exprEval()
+        
     
     # Enter a parse tree produced by vypaParser#program.
     def enterProgram(self, ctx:vypaParser.ProgramContext):
@@ -61,11 +59,11 @@ class customListener(vypaListener):
     
     # Enter a parse tree produced by vypaParser#function_body.
     def enterFunction_body(self, ctx:vypaParser.Function_bodyContext):
-        symbol_table.increaseNamespace()
+        self.symbol_table.increaseNamespace()
 
     # Exit a parse tree produced by vypaParser#function_body.
     def exitFunction_body(self, ctx:vypaParser.Function_bodyContext):
-        symbol_table.decreaseNamespace()
+        self.symbol_table.decreaseNamespace()
 
 
     # Enter a parse tree produced by vypaParser#param_list.
@@ -118,11 +116,11 @@ class customListener(vypaListener):
     def enterStmt_local_vars(self, ctx:vypaParser.Stmt_local_varsContext):
         for name in ctx.ID():
             if (ctx.data_type().getText() == "int"):
-                symbol_table.addSymbol(name.getText(), ctx.data_type().getText(), 0)
+                self.symbol_table.addSymbol(name.getText(), ctx.data_type().getText(), 0)
             elif (ctx.data_type().getText() == "string"):
-                symbol_table.addSymbol(name.getText(), ctx.data_type().getText(), "")
+                self.symbol_table.addSymbol(name.getText(), ctx.data_type().getText(), "")
             else:
-                symbol_table.addSymbol(name.getText(), ctx.data_type().getText(), None)
+                self.symbol_table.addSymbol(name.getText(), ctx.data_type().getText(), None)
 
 
     # Exit a parse tree produced by vypaParser#stmt_local_vars.
@@ -132,13 +130,16 @@ class customListener(vypaListener):
 
     # Enter a parse tree produced by vypaParser#stmt_assignment.
     def enterStmt_assignment(self, ctx:vypaParser.Stmt_assignmentContext):
-        checkExpr(ctx.expression())
-        symbol_table.updateSymbol(ctx.ID().getText(), 1)
+        pass
         
 
     # Exit a parse tree produced by vypaParser#stmt_assignment.
     def exitStmt_assignment(self, ctx:vypaParser.Stmt_assignmentContext):
-        pass
+        val, type = self.expr_eval.eval()
+        if (self.symbol_table.getSymbolType(ctx.ID().getText()) == type):
+            self.symbol_table.updateSymbol(ctx.ID().getText(), val)
+        else:
+            raise typeError("=", self.symbol_table.getSymbolValue(ctx.ID().getText()), val, self.symbol_table.getSymbolType(ctx.ID().getText()), type)
 
 
     # Enter a parse tree produced by vypaParser#stmt_while.
@@ -183,7 +184,8 @@ class customListener(vypaListener):
 
     # Exit a parse tree produced by vypaParser#stmt_return.
     def exitStmt_return(self, ctx:vypaParser.Stmt_returnContext):
-        pass
+        val, type = self.expr_eval.eval()
+        print("returned:", val)
 
 
     # Enter a parse tree produced by vypaParser#expression.
@@ -192,19 +194,27 @@ class customListener(vypaListener):
 
     # Exit a parse tree produced by vypaParser#expression.
     def exitExpression(self, ctx:vypaParser.ExpressionContext):
-        # postfix pres zasobnik to zkontroluju TODO
+        
         if ctx.ID():
-            e = ctx.getText()
-            print("ID:", symbol_table.getSymbolType(e))
-        if ctx.INT_VAL():
-            e = ctx.getText()
-            print("INT:", e)
-        if ctx.ADD():
-            print("+")
-            #for e in ctx.expression():
-             #   if e.INT_VAL():
-              #      print("xoxo")
-               # print(e.getText())
+            val = self.symbol_table.getSymbolValue(ctx.getText())
+            type = self.symbol_table.getSymbolType(ctx.getText())
+            self.expr_eval.push(val, type)
+            
+        elif ctx.INT_VAL():
+            self.expr_eval.push(int(ctx.getText()), "int")
+            
+        elif ctx.STRING_VAL():
+            self.expr_eval.push(ctx.getText(), "string")
+        
+        elif ctx.MULT():
+            self.expr_eval.push("*", None)
+            
+        elif ctx.ADD():
+            self.expr_eval.push("+", None)
+        
+        else:
+            pass
+        
 
 
 
