@@ -12,10 +12,10 @@ class alreadyDeclared(customException):
         self.err_code = 1
         
         
-class assignToNotDeclared(customException):
+class notDeclared(customException):
     def __init__(self, name):
         super().__init__()
-        self.what = str(name) + " not declared, but tries to be assigned!"
+        self.what = str(name) + " not declared!"
         self.err_code = 2
         
         

@@ -6,6 +6,11 @@ from symboltable import symbolTable
 symbol_table = symbolTable() # maybe move to another file
 
 
+def checkExpr(expr):
+    x = expr.getText()
+
+
+
 class customListener(vypaListener):
     # init
     def __init__(self):
@@ -52,6 +57,15 @@ class customListener(vypaListener):
     # Exit a parse tree produced by vypaParser#function_definition.
     def exitFunction_definition(self, ctx:vypaParser.Function_definitionContext):
         pass
+    
+    
+    # Enter a parse tree produced by vypaParser#function_body.
+    def enterFunction_body(self, ctx:vypaParser.Function_bodyContext):
+        symbol_table.increaseNamespace()
+
+    # Exit a parse tree produced by vypaParser#function_body.
+    def exitFunction_body(self, ctx:vypaParser.Function_bodyContext):
+        symbol_table.decreaseNamespace()
 
 
     # Enter a parse tree produced by vypaParser#param_list.
@@ -94,6 +108,7 @@ class customListener(vypaListener):
     def enterStatement(self, ctx:vypaParser.StatementContext):
         pass
 
+
     # Exit a parse tree produced by vypaParser#statement.
     def exitStatement(self, ctx:vypaParser.StatementContext):
         pass
@@ -102,7 +117,12 @@ class customListener(vypaListener):
     # Enter a parse tree produced by vypaParser#stmt_local_vars.
     def enterStmt_local_vars(self, ctx:vypaParser.Stmt_local_varsContext):
         for name in ctx.ID():
-            symbol_table.addSymbol(name.getText(), ctx.data_type().getText(), None)
+            if (ctx.data_type().getText() == "int"):
+                symbol_table.addSymbol(name.getText(), ctx.data_type().getText(), 0)
+            elif (ctx.data_type().getText() == "string"):
+                symbol_table.addSymbol(name.getText(), ctx.data_type().getText(), "")
+            else:
+                symbol_table.addSymbol(name.getText(), ctx.data_type().getText(), None)
 
 
     # Exit a parse tree produced by vypaParser#stmt_local_vars.
@@ -112,6 +132,7 @@ class customListener(vypaListener):
 
     # Enter a parse tree produced by vypaParser#stmt_assignment.
     def enterStmt_assignment(self, ctx:vypaParser.Stmt_assignmentContext):
+        checkExpr(ctx.expression())
         symbol_table.updateSymbol(ctx.ID().getText(), 1)
         
 
@@ -171,7 +192,20 @@ class customListener(vypaListener):
 
     # Exit a parse tree produced by vypaParser#expression.
     def exitExpression(self, ctx:vypaParser.ExpressionContext):
-        pass
+        # postfix pres zasobnik to zkontroluju TODO
+        if ctx.ID():
+            e = ctx.getText()
+            print("ID:", symbol_table.getSymbolType(e))
+        if ctx.INT_VAL():
+            e = ctx.getText()
+            print("INT:", e)
+        if ctx.ADD():
+            print("+")
+            #for e in ctx.expression():
+             #   if e.INT_VAL():
+              #      print("xoxo")
+               # print(e.getText())
+
 
 
     # Enter a parse tree produced by vypaParser#casting.
