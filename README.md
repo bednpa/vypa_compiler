@@ -4,5 +4,5 @@ Hello compilers world!
 
 ## Notes
 
-ST, zpusob reseni
+ST, zpusob reseni   
 jak na unikatnost jmen objektu/funkci/promennych? ST?
