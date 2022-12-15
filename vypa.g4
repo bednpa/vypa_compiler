@@ -17,8 +17,11 @@ definitions: stmt_local_vars /* var def*/
 /* Function definition */
 
 function_definition: type ID LEFT_PARANTHESES_SMOOTH (param_list | VOID) RIGHT_PARANTHESES_SMOOTH
-                     LEFT_PARANTHESES_SHARP (statement)* RIGHT_PARANTHESES_SHARP
+                     function_body
                    ;
+
+function_body: LEFT_PARANTHESES_SHARP (statement)* RIGHT_PARANTHESES_SHARP
+             ;
 
 param_list: data_type ID (COMMA data_type ID)*
           ;
@@ -53,7 +56,7 @@ stmt_assignment: ID ASSIGN expression SEMICOLON
                ;
 
 stmt_while: WHILE LEFT_PARANTHESES_SMOOTH expression RIGHT_PARANTHESES_SMOOTH
-            LEFT_PARANTHESES_SHARP (statement)* RIGHT_PARANTHESES_SHARP
+            function_body
           ;
 
 stmt_func_call: ID LEFT_PARANTHESES_SMOOTH (expression (COMMA expression)*)? RIGHT_PARANTHESES_SMOOTH SEMICOLON
@@ -63,8 +66,8 @@ stmt_method_call: (THIS | SUPER | ID) DOT ID LEFT_PARANTHESES_SMOOTH (expression
                 ;
 
 stmt_if: IF LEFT_PARANTHESES_SMOOTH expression RIGHT_PARANTHESES_SMOOTH
-         LEFT_PARANTHESES_SHARP (statement)* RIGHT_PARANTHESES_SHARP 
-         ELSE LEFT_PARANTHESES_SHARP (statement)* RIGHT_PARANTHESES_SHARP
+         function_body 
+         ELSE function_body
        ;
 
 stmt_return: RETURN (expression)? SEMICOLON
@@ -81,7 +84,7 @@ expression: LEFT_PARANTHESES_SMOOTH expression RIGHT_PARANTHESES_SMOOTH
           | expression ADD expression
           | expression MINUS expression
           | expression (LESS | LOE | GREATER | GOE) expression
-          | expression (EQ | NEQ)
+          | expression (EQ | NEQ) expression
           | expression AND expression
           | expression OR expression
           | (INT_VAL | STRING_VAL | ID)
