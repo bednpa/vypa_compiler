@@ -93,7 +93,7 @@ SET [$BP + 1], 10
 str_a = "abc";
 '''
 
-# Create an "abc" string
+# Create an "abc" string to str_a
 CREATE $5, 1
 SETWORD $5, 0, "abc"
 GETWORD $5, $5, 0
@@ -104,7 +104,7 @@ SET [$BP + 1], $5
 str_b = "abc";
 '''
 
-# Create an empty strings
+# Create an "abc" string to str_b
 CREATE $5, 1
 SETWORD $5, 0, "abc"
 GETWORD $5, $5, 0
