@@ -1,13 +1,19 @@
-# Generated from vypa.g4 by ANTLR 4.11.1
-from antlr4 import *
-if __name__ is not None and "." in __name__:
-    from .vypaParser import vypaParser
-else:
-    from vypaParser import vypaParser
+#
+# Custom class for parse tree traversal.
+#
+from from_antlr.vypaListener import vypaListener
+from from_antlr.vypaParser import vypaParser
+from auxiliary import *
 
-# This class defines a complete listener for a parse tree produced by vypaParser.
-class vypaListener(ParseTreeListener):
 
+class customListener(vypaListener):
+    # init
+    def __init__(self, symbol_table, code_table):
+        self.symbol_table = symbol_table
+        self.code_table = code_table
+        self.expr_eval = exprEval()
+        
+    
     # Enter a parse tree produced by vypaParser#program.
     def enterProgram(self, ctx:vypaParser.ProgramContext):
         pass
@@ -37,20 +43,27 @@ class vypaListener(ParseTreeListener):
 
     # Enter a parse tree produced by vypaParser#function_definition.
     def enterFunction_definition(self, ctx:vypaParser.Function_definitionContext):
+        """for s in ctx.statement():
+            print(s.getText())
+        name = ctx.ID().getText()
+        params = ctx.param_list().getText()
+        print(name, params)
+        print(ctx.type_().getText())"""
         pass
+
 
     # Exit a parse tree produced by vypaParser#function_definition.
     def exitFunction_definition(self, ctx:vypaParser.Function_definitionContext):
         pass
-
-
+    
+    
     # Enter a parse tree produced by vypaParser#function_body.
     def enterFunction_body(self, ctx:vypaParser.Function_bodyContext):
-        pass
+        self.symbol_table.increaseNamespace()
 
     # Exit a parse tree produced by vypaParser#function_body.
     def exitFunction_body(self, ctx:vypaParser.Function_bodyContext):
-        pass
+        self.symbol_table.decreaseNamespace()
 
 
     # Enter a parse tree produced by vypaParser#param_list.
@@ -93,6 +106,7 @@ class vypaListener(ParseTreeListener):
     def enterStatement(self, ctx:vypaParser.StatementContext):
         pass
 
+
     # Exit a parse tree produced by vypaParser#statement.
     def exitStatement(self, ctx:vypaParser.StatementContext):
         pass
@@ -100,7 +114,14 @@ class vypaListener(ParseTreeListener):
 
     # Enter a parse tree produced by vypaParser#stmt_local_vars.
     def enterStmt_local_vars(self, ctx:vypaParser.Stmt_local_varsContext):
-        pass
+        for name in ctx.ID():
+            if (ctx.data_type().getText() == "int"):
+                self.symbol_table.addSymbol(name.getText(), ctx.data_type().getText(), 0)
+            elif (ctx.data_type().getText() == "string"):
+                self.symbol_table.addSymbol(name.getText(), ctx.data_type().getText(), "")
+            else:
+                self.symbol_table.addSymbol(name.getText(), ctx.data_type().getText(), None)
+
 
     # Exit a parse tree produced by vypaParser#stmt_local_vars.
     def exitStmt_local_vars(self, ctx:vypaParser.Stmt_local_varsContext):
@@ -110,10 +131,15 @@ class vypaListener(ParseTreeListener):
     # Enter a parse tree produced by vypaParser#stmt_assignment.
     def enterStmt_assignment(self, ctx:vypaParser.Stmt_assignmentContext):
         pass
+        
 
     # Exit a parse tree produced by vypaParser#stmt_assignment.
     def exitStmt_assignment(self, ctx:vypaParser.Stmt_assignmentContext):
-        pass
+        val, type = self.expr_eval.eval()
+        if (self.symbol_table.getSymbolType(ctx.ID().getText()) == type):
+            self.symbol_table.updateSymbol(ctx.ID().getText(), val)
+        else:
+            raise typeError("=", self.symbol_table.getSymbolValue(ctx.ID().getText()), val, self.symbol_table.getSymbolType(ctx.ID().getText()), type)
 
 
     # Enter a parse tree produced by vypaParser#stmt_while.
@@ -158,7 +184,8 @@ class vypaListener(ParseTreeListener):
 
     # Exit a parse tree produced by vypaParser#stmt_return.
     def exitStmt_return(self, ctx:vypaParser.Stmt_returnContext):
-        pass
+        val, type = self.expr_eval.eval()
+        print("returned:", val)
 
 
     # Enter a parse tree produced by vypaParser#expression.
@@ -167,7 +194,28 @@ class vypaListener(ParseTreeListener):
 
     # Exit a parse tree produced by vypaParser#expression.
     def exitExpression(self, ctx:vypaParser.ExpressionContext):
-        pass
+        
+        if ctx.ID():
+            val = self.symbol_table.getSymbolValue(ctx.getText())
+            type = self.symbol_table.getSymbolType(ctx.getText())
+            self.expr_eval.push(val, type)
+            
+        elif ctx.INT_VAL():
+            self.expr_eval.push(int(ctx.getText()), "int")
+            
+        elif ctx.STRING_VAL():
+            self.expr_eval.push(ctx.getText(), "string")
+        
+        elif ctx.MULT():
+            self.expr_eval.push("*", None)
+            
+        elif ctx.ADD():
+            self.expr_eval.push("+", None)
+        
+        else:
+            pass
+        
+
 
 
     # Enter a parse tree produced by vypaParser#casting.
@@ -177,7 +225,3 @@ class vypaListener(ParseTreeListener):
     # Exit a parse tree produced by vypaParser#casting.
     def exitCasting(self, ctx:vypaParser.CastingContext):
         pass
-
-
-
-del vypaParser
