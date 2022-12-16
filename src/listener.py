@@ -213,6 +213,7 @@ class customListener(vypaListener):
             
         elif ctx.STRING_VAL():
             self.expr_check.addType("string")
+<<<<<<< HEAD
             
         elif ctx.NOT():
             self.expr_check.addOp("NOT")
@@ -235,6 +236,14 @@ class customListener(vypaListener):
             self.expr_check.addOp("AND")
             
         
+=======
+        
+        elif ctx.MULT():
+            self.expr_check.addOp("*")
+            
+        elif ctx.ADD():
+            self.expr_check.addOp("+")
+>>>>>>> a058216b53af9358d7657dfc5282391e7f684387
         
         else:
             pass # add some error in the future
