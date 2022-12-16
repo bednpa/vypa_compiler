@@ -202,6 +202,7 @@ class customListener(vypaListener):
             
         elif ctx.INT_VAL():
             self.expr_eval.push(int(ctx.getText()), "int")
+            self.code_table.addCode("PUSHI", int(ctx.getText()))
             
         elif ctx.STRING_VAL():
             self.expr_eval.push(ctx.getText(), "string")
