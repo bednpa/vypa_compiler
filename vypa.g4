@@ -55,9 +55,12 @@ stmt_local_vars: data_type ID (COMMA ID)* SEMICOLON
 stmt_assignment: ID ASSIGN expression SEMICOLON
                ;
 
-stmt_while: WHILE LEFT_PARANTHESES_SMOOTH expression RIGHT_PARANTHESES_SMOOTH
+stmt_while: while_header
             function_body
           ;
+
+while_header: WHILE LEFT_PARANTHESES_SMOOTH expression RIGHT_PARANTHESES_SMOOTH
+            ;
 
 stmt_func_call: ID LEFT_PARANTHESES_SMOOTH (expression (COMMA expression)*)? RIGHT_PARANTHESES_SMOOTH SEMICOLON
               ;

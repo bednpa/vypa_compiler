@@ -12,6 +12,7 @@ class customListener(vypaListener):
         self.symbol_table = symbol_table
         self.code_table = code_table
         self.expr_check = exprChecker()
+        self.act_func = None
         
     
     # Enter a parse tree produced by vypaParser#program.
@@ -44,19 +45,17 @@ class customListener(vypaListener):
 
     # Enter a parse tree produced by vypaParser#function_definition.
     def enterFunction_definition(self, ctx:vypaParser.Function_definitionContext):
-        """for s in ctx.statement():
-            print(s.getText())
         name = ctx.ID().getText()
-        params = ctx.param_list().getText()
-        print(name, params)
-        print(ctx.type_().getText())"""
-        pass
+        type = ctx.type_().getText()
+        self.symbol_table.addFunc(name, type, None)
+        self.act_func = name
+
 
 
     # Exit a parse tree produced by vypaParser#function_definition.
     def exitFunction_definition(self, ctx:vypaParser.Function_definitionContext):
-        pass
-    
+        self.act_func = None
+        
     
     # Enter a parse tree produced by vypaParser#function_body.
     def enterFunction_body(self, ctx:vypaParser.Function_bodyContext):
@@ -69,7 +68,11 @@ class customListener(vypaListener):
 
     # Enter a parse tree produced by vypaParser#param_list.
     def enterParam_list(self, ctx:vypaParser.Param_listContext):
-        pass
+        params = []
+        for d in ctx.data_type():
+            params.append(d.getText())
+        self.symbol_table.addFuncParams(params)
+ 
 
     # Exit a parse tree produced by vypaParser#param_list.
     def exitParam_list(self, ctx:vypaParser.Param_listContext):
@@ -149,6 +152,17 @@ class customListener(vypaListener):
     def exitStmt_while(self, ctx:vypaParser.Stmt_whileContext):
         pass
 
+    
+    # Enter a parse tree produced by vypaParser#while_header.
+    def enterWhile_header(self, ctx:vypaParser.While_headerContext):
+        pass
+
+    # Exit a parse tree produced by vypaParser#while_header.
+    def exitWhile_header(self, ctx:vypaParser.While_headerContext):
+        type = self.expr_check.returnType()
+        if (type == "string"):
+            raise ifHeaderError(type)
+    
 
     # Enter a parse tree produced by vypaParser#stmt_func_call.
     def enterStmt_func_call(self, ctx:vypaParser.Stmt_func_callContext):
@@ -185,7 +199,7 @@ class customListener(vypaListener):
     # Exit a parse tree produced by vypaParser#if_header.
     def exitIf_header(self, ctx:vypaParser.If_headerContext):
         type = self.expr_check.returnType()
-        if (type != "int"):
+        if (type == "string"):
             raise ifHeaderError(type)
 
 
@@ -195,7 +209,10 @@ class customListener(vypaListener):
 
     # Exit a parse tree produced by vypaParser#stmt_return.
     def exitStmt_return(self, ctx:vypaParser.Stmt_returnContext):
-        pass
+        type = self.expr_check.returnType()
+        func_type = self.symbol_table.getFuncType(self.act_func)
+        if not (type == func_type or (type == None and func_type == "void")):
+            raise returnError(self.act_func, func_type, type)
 
 
     # Enter a parse tree produced by vypaParser#expression.
@@ -262,7 +279,7 @@ class customListener(vypaListener):
             self.expr_check.addOp("||")       
             
         else:
-            raise unexpectedError() # not usre about this
+            raise unexpectedError() # not sure about this
         
 
 

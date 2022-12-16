@@ -10,11 +10,11 @@ int main(void) {
     } else {
         int x;
     }
-    int z;
+
 
     /*int x,y;
     y = 4;
     x = 5 + y * 8 + 2 * 2 + 1; */
 
-    return x;
+    return z;
 }

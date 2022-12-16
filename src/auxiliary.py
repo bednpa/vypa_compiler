@@ -161,6 +161,8 @@ class exprChecker():
     # Returns type of whole expression.
     #    
     def returnType(self):
+        if len(self.stack) == 0:
+            return None
         type = self.stack
         if len(self.stack) == 1:
             self.stack = []
@@ -220,4 +222,10 @@ class ifHeaderError(customException):
     def __init__(self, type):
         self.what = "Type " + str(type) + " can not be in if header."
         self.err_code = 5
+        
+        
+class returnError(customException):
+    def __init__(self, name, type1, type2):
+        self.what = "Return type " + str(type2) + " is different that type " + str(type1) + " of " + str(name) + "."
+        self.err_code = 6
         

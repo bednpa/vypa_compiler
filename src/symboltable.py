@@ -27,7 +27,7 @@ class symbolTable:
         for _, val in self.st.items():
             if val["name"] == name and val["namespace"] == self.namespace:
                 raise alreadyDeclared(name)
-        self.st[self.id] = { "name": name, "type": type, "value": value, "namespace": self.namespace } 
+        self.st[self.id] = { "name": name, "kind": "var", "type": type, "value": value, "namespace": self.namespace } 
         self.id += 1 
         
     
@@ -41,7 +41,7 @@ class symbolTable:
         id = max(ids, key = lambda t: t[1])[0]
         type = self.st[id]["type"]
         namespace = self.st[id]["namespace"]
-        self.st[id].update({ "name": name, "type": type, "value": value, "namespace": namespace })
+        self.st[id].update({ "name": name, "kind": "var", "type": type, "value": value, "namespace": namespace })
         
         
     #
@@ -75,6 +75,62 @@ class symbolTable:
             raise notDeclared(name)
         id = max(ids, key = lambda t: t[1])[0]
         return id
+    
+    
+    #
+    #
+    #
+    def addFunc(self, name, type, params):
+        for _, val in self.st.items():
+            if val["name"] == name:
+                raise alreadyDeclared(name)
+        self.st[self.id] = { "name": name, "kind": "func", "type": type, "value": params, "namespace": 0 } 
+        self.id += 1 
+        
+        
+    #
+    #
+    #
+    def addFuncParams(self, params):
+        was_declared = False
+        for key, val in self.st.items():
+            if val["kind"] == "func" and val["value"] == None:
+                name = self.st[key]["name"]
+                type = self.st[key]["type"]
+                self.st[key].update({ "name": name, "kind": "func", "type": type, "value": params, "namespace": 0 })
+                was_declared = True
+        if not was_declared:
+            raise notDeclared(name)
+        
+        
+    #
+    #
+    #
+    def getFuncType(self, name):
+        for key, val in self.st.items(): 
+            if val["name"] == name:
+                return self.st[key]["type"]
+        raise notDeclared(name)
+    
+    
+    #
+    #
+    #
+    def getFuncParams(self, name):
+        for key, val in self.st.items(): 
+            if val["name"] == name:
+                return self.st[key]["value"]
+        raise notDeclared(name)
+    
+    
+    #
+    #
+    #
+    def getFuncID(self, name):
+        for key, val in self.st.items(): 
+            if val["name"] == name:
+                return key
+        raise notDeclared(name)
         
     
     #
@@ -98,8 +154,8 @@ class symbolTable:
     def dump(self):
         st_to_print = []
         for k in self.st:
-            st_to_print.append([k, self.st[k]["name"], self.st[k]["type"], self.st[k]["value"], self.st[k]["namespace"]])
-        print(tabulate(st_to_print, headers=["ID", "Name", "Type", "Value", "Namespace"], tablefmt='orgtbl'))
+            st_to_print.append([k, self.st[k]["name"], self.st[k]["kind"], self.st[k]["type"], self.st[k]["value"], self.st[k]["namespace"]])
+        print(tabulate(st_to_print, headers=["ID", "Name", "Kind", "Type", "Value/Params", "Namespace"], tablefmt='orgtbl'))
         
         
     

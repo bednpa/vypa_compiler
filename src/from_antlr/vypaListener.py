@@ -125,6 +125,15 @@ class vypaListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by vypaParser#while_header.
+    def enterWhile_header(self, ctx:vypaParser.While_headerContext):
+        pass
+
+    # Exit a parse tree produced by vypaParser#while_header.
+    def exitWhile_header(self, ctx:vypaParser.While_headerContext):
+        pass
+
+
     # Enter a parse tree produced by vypaParser#stmt_func_call.
     def enterStmt_func_call(self, ctx:vypaParser.Stmt_func_callContext):
         pass
