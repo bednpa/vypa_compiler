@@ -2,8 +2,9 @@
 
 int main(void) {
     int x,y;
-    if (1) { // ten if tu kazi vyhodnocovani
+    if (1) {
         int x;
+        x = 5 + y * 8 + 2 * 2;
         string z;
         int v,v;
     } else {

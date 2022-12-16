@@ -152,6 +152,15 @@ class vypaListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by vypaParser#if_header.
+    def enterIf_header(self, ctx:vypaParser.If_headerContext):
+        pass
+
+    # Exit a parse tree produced by vypaParser#if_header.
+    def exitIf_header(self, ctx:vypaParser.If_headerContext):
+        pass
+
+
     # Enter a parse tree produced by vypaParser#stmt_return.
     def enterStmt_return(self, ctx:vypaParser.Stmt_returnContext):
         pass
