@@ -216,19 +216,19 @@ class customListener(vypaListener):
                 self.code_table.addCode("PUSHI", "id_" + id)
             
         elif ctx.INT_VAL():
-            self.expr_eval.push(int(ctx.getText()), "int")
+            self.expr_check.push("int")
             self.code_table.addCode("PUSHI", int(ctx.getText()))
             
         elif ctx.STRING_VAL():
-            self.expr_eval.push(ctx.getText(), "string")
+            self.expr_check.push("string")
             self.code_table.addCode("PUSHS", ctx.getText())
         
         elif ctx.MULT():
-            self.expr_eval.push("*", None)
+            self.expr_check.push("*", None)
             self.code_table.addBinaryOperationCode("MULT")
             
         elif ctx.ADD():
-            self.expr_eval.push("+", None)
+            self.expr_check.push("+", None)
             self.code_table.addBinaryOperationCode("ADD")
         
         else:
