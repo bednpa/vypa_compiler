@@ -6,7 +6,7 @@ int main(void) {
         int x;
         x = 5 + y * 8 + 2 * 2;
         string z;
-        int v,v;
+        int v;
     } else {
         int x;
     }

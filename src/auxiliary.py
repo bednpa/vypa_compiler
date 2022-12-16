@@ -27,17 +27,128 @@ class exprChecker():
     # Adds return type of two top elements.
     #
     def addOp(self, op):
-        o2 = self.stack.pop()
-        o1 = self.stack.pop()
-        
-        if (op == "+"):
+        # not
+        if (op == "!"):
+            o1 = self.stack.pop()
+            if (o1 == "int"):
+                self.stack.append("int")
+            else:
+                typeError(op, None, o2)
+                
+        # mul
+        elif (op == "*"):
+            o2 = self.stack.pop()
+            o1 = self.stack.pop()
             if (o1 == "int" and o2 == "int"):
                 self.stack.append("int")
             else:
                 typeError(op, o1, o2)
                 
-        elif (op == "*"):
+        # div
+        elif (op == "/"):
+            o2 = self.stack.pop()
+            o1 = self.stack.pop()
             if (o1 == "int" and o2 == "int"):
+                self.stack.append("int")
+            else:
+                typeError(op, o1, o2)
+                
+        # add
+        if (op == "+"):
+            o2 = self.stack.pop()
+            o1 = self.stack.pop()
+            if (o1 == "int" and o2 == "int"):
+                self.stack.append("int")
+            elif (o1 == "string" and o2 == "string"):
+                self.stack.append("string")
+            else:
+                typeError(op, o1, o2)
+                
+        # minus
+        if (op == "-"):
+            o2 = self.stack.pop()
+            o1 = self.stack.pop()
+            if (o1 == "int" and o2 == "int"):
+                self.stack.append("int")
+            else:
+                typeError(op, o1, o2)
+                
+        # less
+        if (op == "<"):
+            o2 = self.stack.pop()
+            o1 = self.stack.pop()
+            if (o1 == "int" and o2 == "int"):
+                self.stack.append("int")
+            elif (o1 == "string" and o2 == "string"):
+                self.stack.append("int")
+            else:
+                typeError(op, o1, o2)
+                
+        # less or equal
+        if (op == "<="):
+            o2 = self.stack.pop()
+            o1 = self.stack.pop()
+            if (o1 == "int" and o2 == "int"):
+                self.stack.append("int")
+            elif (o1 == "string" and o2 == "string"):
+                self.stack.append("int")
+            else:
+                typeError(op, o1, o2)
+                
+        # greater
+        if (op == ">"):
+            o2 = self.stack.pop()
+            o1 = self.stack.pop()
+            if (o1 == "int" and o2 == "int"):
+                self.stack.append("int")
+            elif (o1 == "string" and o2 == "string"):
+                self.stack.append("int")
+            else:
+                typeError(op, o1, o2)
+                
+        # greater or equal
+        if (op == ">="):
+            o2 = self.stack.pop()
+            o1 = self.stack.pop()
+            if (o1 == "int" and o2 == "int"):
+                self.stack.append("int")
+            elif (o1 == "string" and o2 == "string"):
+                self.stack.append("int")
+            else:
+                typeError(op, o1, o2)
+                
+        # equal
+        if (op == "=="):
+            o2 = self.stack.pop()
+            o1 = self.stack.pop()
+            if (o1 == o2):
+                self.stack.append("int")
+            else:
+                typeError(op, o1, o2)
+                
+        # not equal
+        if (op == "!="):
+            o2 = self.stack.pop()
+            o1 = self.stack.pop()
+            if (o1 == o2):
+                self.stack.append("int")
+            else:
+                typeError(op, o1, o2)
+                
+        # and
+        if (op == "&&"):
+            o2 = self.stack.pop()
+            o1 = self.stack.pop()
+            if (o1 == o2 and o1 != "string"):
+                self.stack.append("int")
+            else:
+                typeError(op, o1, o2)
+                
+        # or
+        if (op == "||"):
+            o2 = self.stack.pop()
+            o1 = self.stack.pop()
+            if (o1 == o2 and o1 != "string"):
                 self.stack.append("int")
             else:
                 typeError(op, o1, o2)

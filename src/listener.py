@@ -223,29 +223,46 @@ class customListener(vypaListener):
             self.expr_check.addType("string")
             
         elif ctx.NOT():
-            self.expr_check.addOp("NOT")
+            self.expr_check.addOp("!")
         
         elif ctx.MULT():
-            self.expr_check.addOp("MULT")
+            self.expr_check.addOp("*")
             
         elif ctx.DIV():
-            self.expr_check.addOp("DIV")
+            self.expr_check.addOp("/")
             
         elif ctx.ADD():
-            self.expr_check.addOp("ADD")
+            self.expr_check.addOp("+")
             
         elif ctx.MINUS():
-            self.expr_check.addOp("MINUS")
+            self.expr_check.addOp("-")
             
-        #self.expr_check.addOp("ADD")
+        elif ctx.LESS():
+            self.expr_check.addOp("<")
+            
+        elif ctx.LOE():
+            self.expr_check.addOp("<=")
+            
+        elif ctx.GREATER():
+            self.expr_check.addOp(">")
+            
+        elif ctx.GOE():
+            self.expr_check.addOp(">=")
+            
+        elif ctx.EQ():
+            self.expr_check.addOp("==")
+            
+        elif ctx.NEQ():
+            self.expr_check.addOp("!=")
             
         elif ctx.AND():
-            self.expr_check.addOp("AND")
+            self.expr_check.addOp("&&")
             
-        
-        
+        elif ctx.OR():
+            self.expr_check.addOp("||")       
+            
         else:
-            pass # add some error in the future
+            raise unexpectedError() # not usre about this
         
 
 
