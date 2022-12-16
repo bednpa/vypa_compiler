@@ -11,7 +11,7 @@ class customListener(vypaListener):
     def __init__(self, symbol_table, code_table):
         self.symbol_table = symbol_table
         self.code_table = code_table
-        self.expr_eval = exprEval()
+        self.expr_check = exprChecker()
         
     
     # Enter a parse tree produced by vypaParser#program.
@@ -136,11 +136,9 @@ class customListener(vypaListener):
 
     # Exit a parse tree produced by vypaParser#stmt_assignment.
     def exitStmt_assignment(self, ctx:vypaParser.Stmt_assignmentContext):
-        val, type = self.expr_eval.eval()
-        if (self.symbol_table.getSymbolType(ctx.ID().getText()) == type):
-            self.symbol_table.updateSymbol(ctx.ID().getText(), val)
-        else:
-            raise typeError("=", self.symbol_table.getSymbolValue(ctx.ID().getText()), val, self.symbol_table.getSymbolType(ctx.ID().getText()), type)
+        type = self.expr_check.returnType()
+        if (self.symbol_table.getSymbolType(ctx.ID().getText()) != type):
+            raise typeError("=", self.symbol_table.getSymbolType(ctx.ID().getText()), type)
 
 
     # Enter a parse tree produced by vypaParser#stmt_while.
@@ -174,9 +172,21 @@ class customListener(vypaListener):
     def enterStmt_if(self, ctx:vypaParser.Stmt_ifContext):
         pass
 
+
     # Exit a parse tree produced by vypaParser#stmt_if.
     def exitStmt_if(self, ctx:vypaParser.Stmt_ifContext):
         pass
+        
+        
+    # Enter a parse tree produced by vypaParser#if_header.
+    def enterIf_header(self, ctx:vypaParser.If_headerContext):
+        pass
+
+    # Exit a parse tree produced by vypaParser#if_header.
+    def exitIf_header(self, ctx:vypaParser.If_headerContext):
+        type = self.expr_check.returnType()
+        if (type != "int"):
+            raise ifHeaderError(type)
 
 
     # Enter a parse tree produced by vypaParser#stmt_return.
@@ -185,8 +195,7 @@ class customListener(vypaListener):
 
     # Exit a parse tree produced by vypaParser#stmt_return.
     def exitStmt_return(self, ctx:vypaParser.Stmt_returnContext):
-        val, type = self.expr_eval.eval()
-        print("returned:", val)
+        pass
 
 
     # Enter a parse tree produced by vypaParser#expression.
@@ -197,9 +206,8 @@ class customListener(vypaListener):
     def exitExpression(self, ctx:vypaParser.ExpressionContext):
         
         if ctx.ID():
-            val = self.symbol_table.getSymbolValue(ctx.getText())
             type = self.symbol_table.getSymbolType(ctx.getText())
-            self.expr_eval.push(val, type)
+            self.expr_check.addType(type)
             
             id = self.symbol_table.getSymbolID(ctx.getText())
             if (type == "string"):
@@ -224,7 +232,7 @@ class customListener(vypaListener):
             self.code_table.addBinaryOperationCode("ADD")
         
         else:
-            pass
+            pass # add some error in the future
         
 
 
