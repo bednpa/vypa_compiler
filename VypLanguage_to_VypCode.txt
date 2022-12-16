@@ -116,7 +116,7 @@ if (expr) {
     //if stmt
 }
 else {
-    //esle stmt
+    //else stmt
 }
 '''
 
@@ -124,16 +124,16 @@ else {
 SUBI $SP, $SP, 1
 JUMPNZ if, [$SP]
 JUMP else
-LABEL if
+LABEL if:counter,row,position
 //if stmt
-JUMP else_end
+JUMP else_end:counter
 
 # Start of else
-LABEL else
+LABEL else:counter,row,position
 //else stmt
 
 # End of else part
-LABEL else_end
+LABEL else_end:counter,row,position
 
 ##########################################
 '''
@@ -144,18 +144,18 @@ while (expr) {
 
 #Start of while, result of expr is on top of the stack
 SUBI $SP, $SP, 1
-LABEL start_while
+LABEL start_while:counter,row,position
 JUMPNZ while, [$SP]
 JUMP while_end
 
 #Start of while body if expr is true
-LABEL while
+LABEL while:counter,row,position
 //stmt
 //edit the [$SP]
 JUMP start_while
 
 #End of while
-LABEL while_end
+LABEL while_end:counter,row,position
 
 ##########################################
 '''
