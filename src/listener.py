@@ -20,6 +20,7 @@ class customListener(vypaListener):
 
     # Exit a parse tree produced by vypaParser#program.
     def exitProgram(self, ctx:vypaParser.ProgramContext):
+        #self.code_table.translate()
         pass
 
 
