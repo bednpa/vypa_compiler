@@ -54,7 +54,7 @@ class exprChecker():
                 typeError(op, o1, o2)
                 
         # add
-        if (op == "+"):
+        elif (op == "+"):
             o2 = self.stack.pop()
             o1 = self.stack.pop()
             if (o1 == "int" and o2 == "int"):
@@ -65,7 +65,7 @@ class exprChecker():
                 typeError(op, o1, o2)
                 
         # minus
-        if (op == "-"):
+        elif (op == "-"):
             o2 = self.stack.pop()
             o1 = self.stack.pop()
             if (o1 == "int" and o2 == "int"):
@@ -74,7 +74,7 @@ class exprChecker():
                 typeError(op, o1, o2)
                 
         # less
-        if (op == "<"):
+        elif (op == "<"):
             o2 = self.stack.pop()
             o1 = self.stack.pop()
             if (o1 == "int" and o2 == "int"):
@@ -85,7 +85,7 @@ class exprChecker():
                 typeError(op, o1, o2)
                 
         # less or equal
-        if (op == "<="):
+        elif (op == "<="):
             o2 = self.stack.pop()
             o1 = self.stack.pop()
             if (o1 == "int" and o2 == "int"):
@@ -96,7 +96,7 @@ class exprChecker():
                 typeError(op, o1, o2)
                 
         # greater
-        if (op == ">"):
+        elif (op == ">"):
             o2 = self.stack.pop()
             o1 = self.stack.pop()
             if (o1 == "int" and o2 == "int"):
@@ -107,7 +107,7 @@ class exprChecker():
                 typeError(op, o1, o2)
                 
         # greater or equal
-        if (op == ">="):
+        elif (op == ">="):
             o2 = self.stack.pop()
             o1 = self.stack.pop()
             if (o1 == "int" and o2 == "int"):
@@ -118,7 +118,7 @@ class exprChecker():
                 typeError(op, o1, o2)
                 
         # equal
-        if (op == "=="):
+        elif (op == "=="):
             o2 = self.stack.pop()
             o1 = self.stack.pop()
             if (o1 == o2):
@@ -127,7 +127,7 @@ class exprChecker():
                 typeError(op, o1, o2)
                 
         # not equal
-        if (op == "!="):
+        elif (op == "!="):
             o2 = self.stack.pop()
             o1 = self.stack.pop()
             if (o1 == o2):
@@ -136,7 +136,7 @@ class exprChecker():
                 typeError(op, o1, o2)
                 
         # and
-        if (op == "&&"):
+        elif (op == "&&"):
             o2 = self.stack.pop()
             o1 = self.stack.pop()
             if (o1 == o2 and o1 != "string"):
@@ -145,7 +145,7 @@ class exprChecker():
                 typeError(op, o1, o2)
                 
         # or
-        if (op == "||"):
+        elif (op == "||"):
             o2 = self.stack.pop()
             o1 = self.stack.pop()
             if (o1 == o2 and o1 != "string"):
