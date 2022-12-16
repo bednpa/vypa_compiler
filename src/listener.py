@@ -200,18 +200,27 @@ class customListener(vypaListener):
             type = self.symbol_table.getSymbolType(ctx.getText())
             self.expr_eval.push(val, type)
             
+            id = self.symbol_table.getSymbolID(ctx.getText())
+            if (type == "string"):
+                self.code_table.addCode("PUSHS", "id_" + id)
+            elif (type == "int"):
+                self.code_table.addCode("PUSHI", "id_" + id)
+            
         elif ctx.INT_VAL():
             self.expr_eval.push(int(ctx.getText()), "int")
             self.code_table.addCode("PUSHI", int(ctx.getText()))
             
         elif ctx.STRING_VAL():
             self.expr_eval.push(ctx.getText(), "string")
+            self.code_table.addCode("PUSHS", ctx.getText())
         
         elif ctx.MULT():
             self.expr_eval.push("*", None)
+            self.code_table.addBinaryOperationCode("MULT")
             
         elif ctx.ADD():
             self.expr_eval.push("+", None)
+            self.code_table.addBinaryOperationCode("ADD")
         
         else:
             pass
