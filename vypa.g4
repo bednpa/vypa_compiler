@@ -65,10 +65,13 @@ stmt_func_call: ID LEFT_PARANTHESES_SMOOTH (expression (COMMA expression)*)? RIG
 stmt_method_call: (THIS | SUPER | ID) DOT ID LEFT_PARANTHESES_SMOOTH (expression (COMMA expression)*)? RIGHT_PARANTHESES_SMOOTH SEMICOLON /* prvni nevim jestli id jen ! */
                 ;
 
-stmt_if: IF LEFT_PARANTHESES_SMOOTH expression RIGHT_PARANTHESES_SMOOTH
+stmt_if: if_header
          function_body 
          ELSE function_body
        ;
+
+if_header: IF LEFT_PARANTHESES_SMOOTH expression RIGHT_PARANTHESES_SMOOTH
+         ;
 
 stmt_return: RETURN (expression)? SEMICOLON
            ;

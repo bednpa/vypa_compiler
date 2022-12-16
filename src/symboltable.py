@@ -64,6 +64,17 @@ class symbolTable:
             raise notDeclared(name)
         id = max(ids, key = lambda t: t[1])[0]
         return self.st[id]["value"]
+    
+    
+    #
+    # Returns ID of given variable.
+    #
+    def getSymbolID(self, name):
+        ids = [(key, val["namespace"]) for key, val in self.st.items() if val["name"] == name]
+        if len(ids) == 0:
+            raise notDeclared(name)
+        id = max(ids, key = lambda t: t[1])[0]
+        return id
         
     
     #
