@@ -1,18 +1,19 @@
 //Multiply test
 
 int main(void) {
-    /*int x,y;
-    if (y) { // ten if tu kazi vyhodnocovani
+    int x,y;
+    if (1) { // ten if tu kazi vyhodnocovani
         int x;
         string z;
+        int v,v;
     } else {
-        y = 42;
+        int x;
     }
-    int z;*/
+    int z;
 
-    int x,y;
+    /*int x,y;
     y = 4;
-    x = 5 + y * 8 + 2 * 2 + 1; 
+    x = 5 + y * 8 + 2 * 2 + 1; */
 
     return x;
 }
