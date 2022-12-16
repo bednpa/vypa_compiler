@@ -211,9 +211,9 @@ class customListener(vypaListener):
             
             id = self.symbol_table.getSymbolID(ctx.getText())
             if (type == "string"):
-                self.code_table.addCode("PUSHS", "id_" + id)
+                self.code_table.addCode("PUSHS", "id_" + str(id))
             elif (type == "int"):
-                self.code_table.addCode("PUSHI", "id_" + id)
+                self.code_table.addCode("PUSHI", "id_" + str(id))
             
         elif ctx.INT_VAL():
             self.expr_check.addType("int")
