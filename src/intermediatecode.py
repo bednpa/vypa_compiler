@@ -71,12 +71,12 @@ class interCode:
         '''
         Translate intermediate code to VypCode.
         '''
-        for row in self.code:
-            if row["o1"] != None:
-                row["o1"] = self.getAddr(row["o1"])
+        # for row in self.code:
+        #     if row["o1"] != None:
+        #         row["o1"] = self.getAddr(row["o1"])
 
-            if row["op"] == "PUSHI":
+        #     if row["op"] == "PUSHI":
 
-                SET [$BP + 1], 6
-                ADDI $SP, $SP, 1
-                fprintf("SET [$SP] %s\n", row["o1"])
+        #         SET [$BP + 1], 6
+        #         ADDI $SP, $SP, 1
+        #         fprintf("SET [$SP] %s\n", row["o1"])
