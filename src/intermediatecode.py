@@ -1,3 +1,5 @@
+from generator import Generator
+
 '''
 Intermediate Code Cheatsheet
 
@@ -76,123 +78,128 @@ class interCode:
         self.code.append({"op": op, "o1": o1, "o2": o2, "o3": o3})
 
     
-    def addBinaryOperationCode(self, op, o1=None, o2=None, o3=None):
-        self.addCode(self, "POP", "$2")
-        self.addCode(self, "POP", "$1")
-        self.addCode(self, op, "$1", "$1", "$2")
-        self.addCode(self, "PUSHI", "$1")
+    def addBinaryOperationCode(self, op):
+        self.addCode("POP", "$2")
+        self.addCode("POP", "$1")
+        self.addCode(op, "$1", "$1", "$2")
+        self.addCode("PUSHI", "$1")
 
     def addFramePointerInit(self):
-        self.addCode(self, "PUSHI", "$FP")
-        self.addCode(self, "SET", "$FP", "$SP")
+        self.addCode("PUSHI", "$FP")
+        self.addCode("SET", "$FP", "$SP")
 
     def addFramePointerEnd(self):
-        self.addCode(self, "SET", "$SP", "$FP")
-        self.addCode(self, "POP", "$FP")
+        self.addCode("SET", "$SP", "$FP")
+        self.addCode("POP", "$FP")
 
     # TODO: K labelom je potrebne priradit cislo riadku + stlpca znaku
     def addConditionalBeginCode(self, position):
         # expr stmt ...
-        self.addCode(self, "POP", "$1")
-        self.addCode(self, "JUMPNZ", "if_" + position, "$1")
-        self.addCode(self, "JUMP", "else_" + position)
-        self.addCode(self, "LABEL", "if_" + position)
-        self.addFramePointerInit(self)
+        self.addCode("POP", "$1")
+        self.addCode("JUMPNZ", "if_" + position, "$1")
+        self.addCode("JUMP", "else_" + position)
+        self.addCode("LABEL", "if_" + position)
+        # self.addFramePointerInit(self)
         #if stmt ...
         
     # The position musi byt rovnaky pre ako pre najblizsi if
     def addConditionalElseCode(self, position):
         # if stmt ...
-        self.addFramePointerEnd(self)
+        # self.addFramePointerEnd(self)
 
-        self.addCode(self, "JUMP", "else_end_" + position)
+        self.addCode("JUMP", "else_end_" + position)
         # Start of else
-        self.addCode(self, "LABEL", "else_" + position)
-        self.addFramePointerInit(self)
+        self.addCode("LABEL", "else_" + position)
+        # self.addFramePointerInit(self)
         # else stmt ..
 
     def addConditionalEndCode(self, position):
         # else stmt ..
-        self.addFramePointerEnd(self)
-        self.addCode(self, "LABEL", "else_end_" + position)
+        # self.addFramePointerEnd(self)
+        self.addCode("LABEL", "else_end_" + position)
 
     def addWhileBeginCode(self, position):
-        self.addCode(self, "LABEL", "while_begin_" + position)
+        self.addCode("LABEL", "while_begin_" + position)
         # expr stmt ...
 
     def addWhileMiddleCode(self, position):
         # expr stmt ...
-        self.addCode(self, "POP", "$1")
-        self.addCode(self, "JUMPNZ", "while_" + position, "$1")
-        self.addCode(self, "JUMP", "while_end_" + position)
+        self.addCode("POP", "$1")
+        self.addCode("JUMPNZ", "while_" + position, "$1")
+        self.addCode("JUMP", "while_end_" + position)
 
         #Start of while body if expr is true
-        self.addCode(self, "LABEL", "while_" + position)
-        self.addFramePointerInit(self)
+        self.addCode("LABEL", "while_" + position)
+        # self.addFramePointerInit(self)
         # while stmt ...
         
     def addWhileEndCode(self, position):
         #while stmt ...
-        self.addFramePointerEnd(self)
-        self.addCode(self, "JUMP", "while_begin_" + position)
-        self.addCode(self, "LABEL", "while_end_" + position)
+        # self.addFramePointerEnd(self)
+        self.addCode("JUMP", "while_begin_" + position)
+        self.addCode("LABEL", "while_end_" + position)
 
     def addFunctionCallCode(self, func_label):
-        self.addCode(self, "CALL", "[$SP]", func_label)
+        self.addCode("CALL", "[$SP]", func_label)
 
     def addFunctionDefinitionCode(self, func_label):
-        self.addCode(self, "LABEL", func_label)
+        self.addCode("LABEL", func_label)
         self.addFramePointerInit()
 
-    def addVarDeclarationCode(self, o1, o2):
-        self.addCode(self, "SET", o1, o2)
+    def addVarInitCode(self, o1, o2):
+        self.addCode("SETN", o1, o2)
+
+    def addVarAssignCode(self, o1, o2):
+        self.addCode("SET", o1, o2)
 
     def addReturnCode(self, o1="int_0"):
-        self.addCode(self, "SET", "$1", o1)
+        self.addCode("SET", "$1", o1)
 
 
-    def getAddress():
+
+    def getAddressPos(self, id):
         ''' 
         Adresa bude ulozena ako cislo v stacku, cez globalny base pointer sa k nej dostanem
         napr ulozena hodnota v 5
         tak sa k nej dostaneme ako [$BP + 5]
         '''
+        return self.address_dict[id]
+
+
+    def setAddressPos(self, id, stack_pointer):
+        self.address_dict[id] = stack_pointer
+
+        
 
     def translate(self):
         '''
         Translate intermediate code to VypCode.
         '''
-        print(self.code)
-        # for row in self.code:
 
-        #     if row["op"] == "SET":
-        #         if row["o1"] in self.address_dict:
-        #             row["o1"] = self.getAddress(row["o1"])
+        #Optimalization?
 
-        #             if row["o2"][0] == "s":
-        #                 #TODO: Generate set for string in target code
-        #                 pass
-        #             if row["o2"][0] == "i":
-        #                 #TODO: Generate set for integer in target code
-        #                 pass
-        #             if row["o2"][0] == "v":
-        #                 #TODO: Generate set for variable in target code
-        #                 # Get value from address using []
-        #                 pass
-        #         else:
-        #             #Create a new variable - push it to the stack
-        #             self.setAddress(row["op"], self.stack_pointer)
-         
-        #             if row["o2"][0] == "s":
-        #                 #TODO: Generate push for string in target code
-        #                 pass
-        #             if row["o2"][0] == "i":
-        #                 #TODO: Generate push for integer in target code
-        #                 pass
-        #             if row["o2"][0] == "v":
-        #                 #TODO: Generate push for variable in target code
-        #                 # Get value from address using []
-        #                 pass
+        #generator_init
+        generator = Generator()
 
+        for row in self.code:
+            print(row["op"])
 
-    
+            if row["op"] == "SETN":
+                self.setAddressPos(row["o1"][2:], self.stack_pointer)
+                if row["o2"][0] == "s":
+                        generator.generateSetNewString()
+                if row["o2"][0] == "i":
+                        generator.generateSetNewInt()
+                self.stack_pointer += 1
+
+            if row["op"] == "SET":
+                o1_pos = self.getAddressPos(row["o1"][2:])
+                if row["o2"][0] == "s":
+                        generator.generateSetString(o1_pos, row["o2"][2:])
+                if row["o2"][0] == "i":
+                        generator.generateSetInt(o1_pos, row["o2"][2:])
+                if row["o2"][0] == "v":
+                        o2_pos = self.getAddressPos(row["o2"][2:])
+                        generator.generateSetVar(o1_pos, o2_pos)
+
+        print(generator.target_code)
