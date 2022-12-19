@@ -21,7 +21,7 @@ class customListener(vypaListener):
 
     # Exit a parse tree produced by vypaParser#program.
     def exitProgram(self, ctx:vypaParser.ProgramContext):
-        #self.code_table.translate()
+        self.code_table.translate()
         pass
 
 
@@ -121,11 +121,16 @@ class customListener(vypaListener):
         for name in ctx.ID():
             if (ctx.data_type().getText() == "int"):
                 self.symbol_table.addSymbol(name.getText(), ctx.data_type().getText(), 0)
+
+                self.code_table.addVarInitCode("v_" + str(self.symbol_table.getSymbolID(name.getText())) , "i_0")
+
             elif (ctx.data_type().getText() == "string"):
                 self.symbol_table.addSymbol(name.getText(), ctx.data_type().getText(), "")
+
+                self.code_table.addVarInitCode("v_" + str(self.symbol_table.getSymbolID(name.getText())) , "s_")
+
             else:
                 self.symbol_table.addSymbol(name.getText(), ctx.data_type().getText(), None)
-
 
     # Exit a parse tree produced by vypaParser#stmt_local_vars.
     def exitStmt_local_vars(self, ctx:vypaParser.Stmt_local_varsContext):
@@ -142,6 +147,16 @@ class customListener(vypaListener):
         type = self.expr_check.returnType()
         if (self.symbol_table.getSymbolType(ctx.ID().getText()) != type):
             raise typeError("=", self.symbol_table.getSymbolType(ctx.ID().getText()), type)
+
+        symbol_type = self.symbol_table.getSymbolType(ctx.ID().getText())
+        if (symbol_type == "int"):
+            pass    
+
+        elif (symbol_type == "string"):
+            pass
+
+        else:
+            pass
 
 
     # Enter a parse tree produced by vypaParser#stmt_while.
@@ -228,9 +243,9 @@ class customListener(vypaListener):
             
             id = self.symbol_table.getSymbolID(ctx.getText())
             if (type == "string"):
-                self.code_table.addCode("PUSHS", "id_" + str(id))
+                self.code_table.addCode("PUSHS", "v_" + str(id))
             elif (type == "int"):
-                self.code_table.addCode("PUSHI", "id_" + str(id))
+                self.code_table.addCode("PUSHI", "v_" + str(id))
             
         elif ctx.INT_VAL():
             self.expr_check.addType("int")
@@ -238,21 +253,26 @@ class customListener(vypaListener):
             
         elif ctx.STRING_VAL():
             self.expr_check.addType("string")
+            self.code_table.addCode("PUSHS", ctx.getText())
             
         elif ctx.NOT():
             self.expr_check.addOp("!")
         
         elif ctx.MULT():
             self.expr_check.addOp("*")
+            self.code_table.addBinaryOperationCode("MULT")
             
         elif ctx.DIV():
             self.expr_check.addOp("/")
+            self.code_table.addBinaryOperationCode("DIV")
             
         elif ctx.ADD():
             self.expr_check.addOp("+")
+            self.code_table.addBinaryOperationCode("ADD")
             
         elif ctx.MINUS():
             self.expr_check.addOp("-")
+            self.code_table.addBinaryOperationCode("SUB")
             
         elif ctx.LESS():
             self.expr_check.addOp("<")
