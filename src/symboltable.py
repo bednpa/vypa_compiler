@@ -56,21 +56,6 @@ class symbolTable:
             raise notDeclared(name)
         id = max(ids, key = lambda t: t[1])[0]
         return id
-    
-    
-    #
-    # Creates new namespace.
-    #
-    def increaseNamespace(self):
-        self.namespace += 1
-        
-        
-    #
-    # Erase newest namespace.
-    #
-    def decreaseNamespace(self):
-        self.st = {key:val for key, val in self.st.items() if val["namespace"] < self.namespace}
-        self.namespace -= 1
             
          
     #
@@ -172,9 +157,48 @@ class funcTable():
                 return self.ft[key]["symbol_table"]
         raise notDeclared(name)
     
+    
+    #
+    #
+    #
+    def getUniqueID(self, func_name, var_name):
+        for k1, v1 in self.ft.items(): 
+            if v1["name"] == func_name:
+                st = self.ft[k1]["symbol_table"]
+                for k2, v2 in st.st.items(): 
+                    if v2["name"] == var_name:
+                        return str(k1) + "_" + str(k2)
+                raise notDeclared(var_name)
+        raise notDeclared(func_name)
+    
+    
+    #
+    # Creates new namespace in function.
+    #
+    def increaseNamespace(self, name):
+        for key, val in self.ft.items(): 
+            if val["name"] == name:
+                st = self.ft[key]["symbol_table"]
+                st.namespace += 1
+                return
+        raise unexpectedError()
+        
         
     #
-    # Prints symbol table to the output.
+    # Erase newest namespace in function.
+    #
+    def decreaseNamespace(self, name):
+        for key, val in self.ft.items(): 
+            if val["name"] == name:
+                st = self.ft[key]["symbol_table"]
+                st.st = {key:val for key, val in st.st.items() if val["namespace"] < st.namespace}
+                st.namespace -= 1
+                return
+        raise unexpectedError()
+    
+        
+    #
+    # Prints function table to the output.
     #
     def dump(self):
         print("Functions table:")
@@ -184,24 +208,14 @@ class funcTable():
         print(tabulate(ft_to_print, headers=["ID", "Name", "Type", "Params"], tablefmt='orgtbl'))
         
         
-    
-    
-def main():
-    ft = funcTable()
-    ft.addFunc("first_func", "string")
-    ft.addFuncParams([{"type": "string", "id": "x"}])
-    ft.addFunc("second_func", "int")
-    ft.addFuncParams([{"type": "int", "id": "y"}])
-    st1 = ft.getFuncST("first_func")
-    st1.addSymbol("y", "string")
-    st2 = ft.getFuncST("second_func")
-    st2.addSymbol("z", "int")
-    #st2.addSymbol("first_func", "int")
-    ft.dump()
-    st1.dump()
-    st2.dump()
-        
-        
-        
-main()
-    
+    #
+    # Prints function table and all symbol tables to the output.
+    #
+    def dumpAll(self):
+        ft_to_print = []
+        for k in self.ft:
+            ft_to_print.append([k, self.ft[k]["name"], self.ft[k]["type"], [ (v["type"], v["id"]) for v in self.ft[k]["params"]]])
+            self.ft[k]["symbol_table"].dump()
+            print("")
+        print("Functions table:")
+        print(tabulate(ft_to_print, headers=["ID", "Name", "Type", "Params"], tablefmt='orgtbl'))

@@ -1,7 +1,7 @@
 //Multiply test
 
-int main(int x, string z) {
-    int x,y,x;
+int main(int x, int z) {
+    int x,y;
     if (1) {
         int x;
         x = 5 + y * 8 + 2 * 2;
