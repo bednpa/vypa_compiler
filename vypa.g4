@@ -23,6 +23,9 @@ function_definition: type ID LEFT_PARANTHESES_SMOOTH (param_list | VOID) RIGHT_P
 function_body: LEFT_PARANTHESES_SHARP (statement)* RIGHT_PARANTHESES_SHARP
              ;
 
+function_body_not_in_func: LEFT_PARANTHESES_SHARP (statement)* RIGHT_PARANTHESES_SHARP
+             ;
+
 param_list: data_type ID (COMMA data_type ID)*
           ;
 
@@ -56,7 +59,7 @@ stmt_assignment: ID ASSIGN expression SEMICOLON
                ;
 
 stmt_while: while_header
-            function_body
+            function_body_not_in_func
           ;
 
 while_header: WHILE LEFT_PARANTHESES_SMOOTH expression RIGHT_PARANTHESES_SMOOTH
@@ -69,8 +72,8 @@ stmt_method_call: (THIS | SUPER | ID) DOT ID LEFT_PARANTHESES_SMOOTH (expression
                 ;
 
 stmt_if: if_header
-         function_body 
-         ELSE function_body
+         function_body_not_in_func
+         ELSE function_body_not_in_func
        ;
 
 if_header: IF LEFT_PARANTHESES_SMOOTH expression RIGHT_PARANTHESES_SMOOTH

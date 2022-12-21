@@ -19,9 +19,10 @@ def main(argv):
     tree = parser.program()
     
     func_table = funcTable()
+    funcs_to_be_defined = funcTable()
     code_table = interCode()
 
-    printer = customListener(func_table, code_table)
+    printer = customListener(func_table, funcs_to_be_defined, code_table)
     walker = ParseTreeWalker()
     try:
         walker.walk(printer, tree)

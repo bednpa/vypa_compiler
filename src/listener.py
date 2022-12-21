@@ -8,8 +8,9 @@ from auxiliary import *
 
 class customListener(vypaListener):
     # init
-    def __init__(self, func_table, code_table):
+    def __init__(self, func_table, funcs_to_be_defined, code_table):
         self.func_table = func_table
+        self.funcs_to_be_defined = funcs_to_be_defined
         #self.code_table = code_table
         self.expr_check = exprChecker()
         self.act_func = None
@@ -65,10 +66,19 @@ class customListener(vypaListener):
     
     # Enter a parse tree produced by vypaParser#function_body.
     def enterFunction_body(self, ctx:vypaParser.Function_bodyContext):
-        self.func_table.increaseNamespace(self.act_func)
+        pass
 
     # Exit a parse tree produced by vypaParser#function_body.
     def exitFunction_body(self, ctx:vypaParser.Function_bodyContext):
+        pass
+    
+    
+    # Enter a parse tree produced by vypaParser#function_body_not_in_func.
+    def enterFunction_body_not_in_func(self, ctx:vypaParser.Function_body_not_in_funcContext):
+        self.func_table.increaseNamespace(self.act_func)
+
+    # Exit a parse tree produced by vypaParser#function_body_not_in_func.
+    def exitFunction_body_not_in_func(self, ctx:vypaParser.Function_body_not_in_funcContext):
         self.func_table.decreaseNamespace(self.act_func)
 
 
@@ -197,7 +207,14 @@ class customListener(vypaListener):
 
     # Exit a parse tree produced by vypaParser#stmt_func_call.
     def exitStmt_func_call(self, ctx:vypaParser.Stmt_func_callContext):
-        pass
+        name = ctx.ID().getText()
+        defined_params = self.func_table.getFuncParams(name) # TODO add oportunity for late definition
+        call_params = self.expr_check.returnType()
+        if len(call_params) != len(defined_params):
+            raise badParamsCountFuncCall(name, len(call_params))
+        for i in range(len(call_params)):
+            if call_params[i] != defined_params[i]["type"]:
+                raise badParamsFuncCall(name, call_params)
 
 
     # Enter a parse tree produced by vypaParser#stmt_method_call.
@@ -249,7 +266,7 @@ class customListener(vypaListener):
     # Exit a parse tree produced by vypaParser#expression.
     def exitExpression(self, ctx:vypaParser.ExpressionContext):
         
-        if ctx.ID():
+        if ctx.ID(): # TODO add function calls
             st = self.func_table.getFuncST(self.act_func)
             type = st.getSymbolType(ctx.getText())
             self.expr_check.addType(type)

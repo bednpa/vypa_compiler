@@ -168,7 +168,8 @@ class exprChecker():
             self.stack = []
             return type[0]
         else:
-            return unexpectedError()
+            self.stack = []
+            return type
 
 
 #
@@ -236,4 +237,25 @@ class returnError(customException):
 class embeddedRedeclared(customException):
     def __init__(self, name):
         self.what = "Can not redefine embedded function " + str(name) + "."
+        self.err_code = 7
+        
+        
+#
+# Class of bad params function call error.
+#      
+class badParamsFuncCall(customException):
+    def __init__(self, name, params):
+        self.what = "Can not call function " + str(name) + " with parameters of types"
+        for p in params:
+            self.what += " " + p 
+        self.what += "."
+        self.err_code = 7
+        
+        
+#
+# Class of bad params count function call error.
+#      
+class badParamsCountFuncCall(customException):
+    def __init__(self, name, num):
+        self.what = "Can not call function " + str(name) + " with " + str(num) + " parameters."
         self.err_code = 7
