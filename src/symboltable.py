@@ -102,10 +102,10 @@ class funcTable():
     #
     #
     #
-    def addFuncParams(self, params):
+    def addFuncParams(self, name, params):
         was_declared = False
         for key, val in self.ft.items():
-            if val["params"] == None:
+            if val["params"] == None and val["name"] == name:
                 name = self.ft[key]["name"]
                 type = self.ft[key]["type"]
                 st = self.ft[key]["symbol_table"]
@@ -141,11 +141,14 @@ class funcTable():
     #
     #
     #
-    def getFuncID(self, name):
+    def getFuncID(self, name, excpt=True):
         for key, val in self.ft.items(): 
             if val["name"] == name:
                 return key
-        raise notDeclared(name)
+        if excpt:
+            raise notDeclared(name)
+        else:
+            return -1
         
     
     #
@@ -204,7 +207,10 @@ class funcTable():
         print("Functions table:")
         ft_to_print = []
         for k in self.ft:
-            ft_to_print.append([k, self.ft[k]["name"], self.ft[k]["type"], [ (v["type"], v["id"]) for v in self.ft[k]["params"]]])
+            if self.ft[k]["params"] == None:
+                ft_to_print.append([k, self.ft[k]["name"], self.ft[k]["type"], None])
+            else:
+                ft_to_print.append([k, self.ft[k]["name"], self.ft[k]["type"], [ (v["type"], v["id"]) for v in self.ft[k]["params"]]])
         print(tabulate(ft_to_print, headers=["ID", "Name", "Type", "Params"], tablefmt='orgtbl'))
         
         
@@ -214,7 +220,10 @@ class funcTable():
     def dumpAll(self):
         ft_to_print = []
         for k in self.ft:
-            ft_to_print.append([k, self.ft[k]["name"], self.ft[k]["type"], [ (v["type"], v["id"]) for v in self.ft[k]["params"]]])
+            if self.ft[k]["params"] == None:
+                ft_to_print.append([k, self.ft[k]["name"], self.ft[k]["type"], None])
+            else:
+                ft_to_print.append([k, self.ft[k]["name"], self.ft[k]["type"], [ (v["type"], v["id"]) for v in self.ft[k]["params"]]])
             self.ft[k]["symbol_table"].dump()
             print("")
         print("Functions table:")

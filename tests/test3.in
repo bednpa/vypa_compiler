@@ -1,8 +1,10 @@
 //Multiply test
 
-void hello(int a, int b, string c) {
+
+void hello(int x) {
     return;
 }
+
 
 int main(int u, int z) {
     int v,y;
@@ -18,7 +20,8 @@ int main(int u, int z) {
 
     k = k + k;
 
-    hello(v,u,k);
+    hello(u);
+
 
 
     /*int x,y;
@@ -27,3 +30,7 @@ int main(int u, int z) {
 
     return z;
 }
+
+
+
+

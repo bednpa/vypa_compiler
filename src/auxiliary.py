@@ -245,11 +245,14 @@ class embeddedRedeclared(customException):
 #      
 class badParamsFuncCall(customException):
     def __init__(self, name, params):
-        self.what = "Can not call function " + str(name) + " with parameters of types"
+        if len(params) > 1:
+            self.what = "Can not call function " + str(name) + " with parameters of types"
+        else:
+            self.what = "Can not call function " + str(name) + " with parameter of type"
         for p in params:
             self.what += " " + p 
         self.what += "."
-        self.err_code = 7
+        self.err_code = 8
         
         
 #
@@ -257,5 +260,17 @@ class badParamsFuncCall(customException):
 #      
 class badParamsCountFuncCall(customException):
     def __init__(self, name, num):
-        self.what = "Can not call function " + str(name) + " with " + str(num) + " parameters."
-        self.err_code = 7
+        if num > 1:
+            self.what = "Can not call function " + str(name) + " with " + str(num) + " parameters."
+        else:
+            self.what = "Can not call function " + str(name) + " with " + str(num) + " parameter."
+        self.err_code = 9
+        
+        
+#
+# Class of at least two different function call error.
+#      
+class differentFuncCalls(customException):
+    def __init__(self, name):
+        self.what = "Function " + str(name) + " is called two times with different types or number of parameters."
+        self.err_code = 10
