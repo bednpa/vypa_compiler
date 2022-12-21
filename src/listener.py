@@ -50,11 +50,14 @@ class customListener(vypaListener):
         self.symbol_table.addFunc(name, type, None)
         self.act_func = name
 
-
+        self.code_table.addFunctionDefinitionCode(name)
 
     # Exit a parse tree produced by vypaParser#function_definition.
     def exitFunction_definition(self, ctx:vypaParser.Function_definitionContext):
         self.act_func = None
+
+        self.code_table.addFunctionEndCode()
+
         
     
     # Enter a parse tree produced by vypaParser#function_body.
@@ -148,15 +151,9 @@ class customListener(vypaListener):
         if (self.symbol_table.getSymbolType(ctx.ID().getText()) != type):
             raise typeError("=", self.symbol_table.getSymbolType(ctx.ID().getText()), type)
 
-        symbol_type = self.symbol_table.getSymbolType(ctx.ID().getText())
-        if (symbol_type == "int"):
-            pass    
-
-        elif (symbol_type == "string"):
-            pass
-
-        else:
-            pass
+        self.code_table.addCode("POP", "$1")
+        id = self.symbol_table.getSymbolID(ctx.ID().getText())
+        self.code_table.addVarAssignCode("v_" + str(id), "$1")
 
 
     # Enter a parse tree produced by vypaParser#stmt_while.
@@ -249,54 +246,67 @@ class customListener(vypaListener):
             
         elif ctx.INT_VAL():
             self.expr_check.addType("int")
-            self.code_table.addCode("PUSHI", int(ctx.getText()))
+            self.code_table.addCode("PUSHI", "i_" + ctx.getText())
             
         elif ctx.STRING_VAL():
             self.expr_check.addType("string")
-            self.code_table.addCode("PUSHS", ctx.getText())
+            self.code_table.addCode("PUSHS", "s_" + ctx.getText())
             
         elif ctx.NOT():
             self.expr_check.addOp("!")
+            self.code_table.addSingleOperationCode("NOT")
         
         elif ctx.MULT():
             self.expr_check.addOp("*")
-            self.code_table.addBinaryOperationCode("MULT")
+            self.code_table.addBinaryOperationCode("MULI")
             
         elif ctx.DIV():
             self.expr_check.addOp("/")
-            self.code_table.addBinaryOperationCode("DIV")
+            self.code_table.addBinaryOperationCode("DIVI")
             
         elif ctx.ADD():
+            # TODO: add strings
+            o1 = self.expr_check.stack[-1]
+            o2 = self.expr_check.stack[-2]
             self.expr_check.addOp("+")
-            self.code_table.addBinaryOperationCode("ADD")
+            self.code_table.addBinaryOperationCode("ADDI")
+
             
         elif ctx.MINUS():
             self.expr_check.addOp("-")
-            self.code_table.addBinaryOperationCode("SUB")
+            self.code_table.addBinaryOperationCode("SUBI")
             
         elif ctx.LESS():
             self.expr_check.addOp("<")
+            self.code_table.addBinaryOperationCode("LTI")
             
         elif ctx.LOE():
             self.expr_check.addOp("<=")
+            self.code_table.addBinaryExtendCode("LTI", "EQI", "OR")
             
         elif ctx.GREATER():
             self.expr_check.addOp(">")
+            self.code_table.addBinaryOperationCode("GTI")
             
         elif ctx.GOE():
             self.expr_check.addOp(">=")
+            self.code_table.addBinaryExtendCode("GTI", "EQI", "OR")
             
         elif ctx.EQ():
             self.expr_check.addOp("==")
+            self.code_table.addBinaryOperationCode("EQI")
             
         elif ctx.NEQ():
             self.expr_check.addOp("!=")
+            self.code_table.addNEQOperation()
             
         elif ctx.AND():
             self.expr_check.addOp("&&")
+            self.code_table.addBinaryOperationCode("AND")
             
         elif ctx.OR():
-            self.expr_check.addOp("||")       
+            self.expr_check.addOp("||")
+            self.code_table.addBinaryOperationCode("OR")       
             
         else:
             raise unexpectedError() # not sure about this
