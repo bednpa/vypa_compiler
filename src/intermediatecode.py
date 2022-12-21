@@ -96,28 +96,24 @@ class interCode:
     # TODO: K labelom je potrebne priradit cislo riadku + stlpca znaku
     def addConditionalBeginCode(self, position):
         # expr stmt ...
-        self.addCode("POP", "$1")
         self.addCode("JUMPNZ", "if_" + position, "$1")
         self.addCode("JUMP", "else_" + position)
         self.addCode("LABEL", "if_" + position)
-        # self.addFramePointerInit(self)
         #if stmt ...
         
     # The position musi byt rovnaky pre ako pre najblizsi if
     def addConditionalElseCode(self, position):
         # if stmt ...
-        # self.addFramePointerEnd(self)
 
         self.addCode("JUMP", "else_end_" + position)
         # Start of else
         self.addCode("LABEL", "else_" + position)
-        # self.addFramePointerInit(self)
         # else stmt ..
 
     def addConditionalEndCode(self, position):
         # else stmt ..
-        # self.addFramePointerEnd(self)
         self.addCode("LABEL", "else_end_" + position)
+
 
     def addWhileBeginCode(self, position):
         self.addCode("LABEL", "while_begin_" + position)
@@ -214,7 +210,7 @@ class interCode:
                 else:
                     generator.generateSetInt(row["o1"], row["o2"])
 
-
+            # ADDI $1, $1, $2
             if (row["op"] == "ADDI" or row["op"] == "SUBI" or row["op"] == "MULI" or row["op"] == "DIVI" or
                 row["op"] == "EQI"  or row["op"] == "LTI"  or row["op"] == "GTI" or
                 row["op"] == "OR"   or row["op"] == "AND"):

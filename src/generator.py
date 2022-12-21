@@ -11,6 +11,10 @@ class Generator:
                              "ALIAS FP $7\n\n"
                              "JUMP main\n\n"
                              ""
+                             # TODO: Concat, substr, Print
+                             # Take c code for those functions and generate code for them
+                             # https://www.programmingsimplified.com/c/source-code/c-substring
+                             # https://www.geeksforgeeks.org/concatenating-two-strings-in-c/
                              "LABEL readInt\n"
                              "ADDI $SP, $SP, 1\n"
                              "SET $FP, $SP\n"
@@ -34,7 +38,8 @@ class Generator:
                              "SET $SP, $FP\n"
                              "SUBI $SP, $SP, 1\n"
                              "RETURN [$SP]\n\n"
-                             "")
+                             ""
+                             )
 
     def generateSetNewInt(self):
         self.target_code += "#Set New Int Operation\n"

@@ -1,6 +1,7 @@
 #
 # Custom class for parse tree traversal.
 #
+import string
 from from_antlr.vypaListener import vypaListener
 from from_antlr.vypaParser import vypaParser
 from auxiliary import *
@@ -15,6 +16,8 @@ class customListener(vypaListener):
         #self.code_table = code_table
         self.expr_check = exprChecker()
         self.act_func = None
+
+        self.label_counter = 0
         
         
     def checkFuncTypes(self, name, call_params):
@@ -268,7 +271,9 @@ class customListener(vypaListener):
 
     # Exit a parse tree produced by vypaParser#stmt_if.
     def exitStmt_if(self, ctx:vypaParser.Stmt_ifContext):
+        #ctx.ELSE():
         pass
+        
         
         
     # Enter a parse tree produced by vypaParser#if_header.
@@ -280,6 +285,10 @@ class customListener(vypaListener):
         type = self.expr_check.returnType()
         if (type == "string"):
             raise ifHeaderError(type)
+
+        self.code_table.addCode("POP", "$1")
+        self.code_table.addConditionalBeginCode(self, self.label_counter)
+        self.label_counter += 1
 
 
     # Enter a parse tree produced by vypaParser#stmt_return.
@@ -335,9 +344,13 @@ class customListener(vypaListener):
         elif ctx.ADD():
             # TODO: add strings
             o1 = self.expr_check.stack[-1]
-            o2 = self.expr_check.stack[-2]
             self.expr_check.addOp("+")
-            self.code_table.addBinaryOperationCode("ADDI")
+
+            if type(o1) == string:
+                #self.code_table.addConcatenationExpr()
+                pass
+            if type(o1) == int:
+                self.code_table.addBinaryOperationCode("ADDI")
 
             
         elif ctx.MINUS():
@@ -345,26 +358,34 @@ class customListener(vypaListener):
             self.code_table.addBinaryOperationCode("SUBI")
             
         elif ctx.LESS():
+            o1 = self.expr_check.stack[-1]
             self.expr_check.addOp("<")
+            if type(o1) == string:
+                
             self.code_table.addBinaryOperationCode("LTI")
             
         elif ctx.LOE():
+            o1 = self.expr_check.stack[-1]
             self.expr_check.addOp("<=")
             self.code_table.addBinaryExtendCode("LTI", "EQI", "OR")
             
         elif ctx.GREATER():
+            o1 = self.expr_check.stack[-1]
             self.expr_check.addOp(">")
             self.code_table.addBinaryOperationCode("GTI")
             
         elif ctx.GOE():
+            o1 = self.expr_check.stack[-1]
             self.expr_check.addOp(">=")
             self.code_table.addBinaryExtendCode("GTI", "EQI", "OR")
             
         elif ctx.EQ():
+            o1 = self.expr_check.stack[-1]
             self.expr_check.addOp("==")
             self.code_table.addBinaryOperationCode("EQI")
             
         elif ctx.NEQ():
+            o1 = self.expr_check.stack[-1]
             self.expr_check.addOp("!=")
             self.code_table.addNEQOperation()
             
