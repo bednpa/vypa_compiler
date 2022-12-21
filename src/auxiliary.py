@@ -229,3 +229,11 @@ class returnError(customException):
         self.what = "Return type " + str(type2) + " is different that type " + str(type1) + " of " + str(name) + "."
         self.err_code = 6
         
+        
+#
+# Class of variable not declared error.
+#      
+class embeddedRedeclared(customException):
+    def __init__(self, name):
+        self.what = "Can not redefine embedded function " + str(name) + "."
+        self.err_code = 7

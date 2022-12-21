@@ -46,6 +46,8 @@ class customListener(vypaListener):
     # Enter a parse tree produced by vypaParser#function_definition.
     def enterFunction_definition(self, ctx:vypaParser.Function_definitionContext):
         name = ctx.ID().getText()
+        if name in ["print", "readInt", "readString", "length", "subStr"]:
+            raise embeddedRedeclared()
         type = ctx.type_().getText()
         self.symbol_table.addFunc(name, type, None)
         self.act_func = name
@@ -179,6 +181,7 @@ class customListener(vypaListener):
     # Enter a parse tree produced by vypaParser#stmt_func_call.
     def enterStmt_func_call(self, ctx:vypaParser.Stmt_func_callContext):
         pass
+    
 
     # Exit a parse tree produced by vypaParser#stmt_func_call.
     def exitStmt_func_call(self, ctx:vypaParser.Stmt_func_callContext):
