@@ -46,24 +46,6 @@ LABEL else_end:row,position
 
 '''
 
-def getInterFunctionDefinition(label_name):
-    inter_code = '''
-    LABEL {}
-        # Push FP and increment SP
-        PUSHI $FP
-        ADDI $SP, $SP, 1
-    '''.format(label_name)
-
-    return inter_code
-
-def getInterDeclaration(id_name, value):
-    inter_code = '''
-    SET {} {}'''
-
-
-
-
-
 class interCode:
     def __init__(self):
         self.code = []
@@ -77,20 +59,39 @@ class interCode:
     def addCode(self, op, o1=None, o2=None, o3=None):
         self.code.append({"op": op, "o1": o1, "o2": o2, "o3": o3})
 
-    
+    def addSingleOperatonCode(self, op):
+        self.addCode("POP", "$1")
+        self.addCode(op, "$1", "$1")
+        self.addCode("PUSHI", "$1")
+
     def addBinaryOperationCode(self, op):
         self.addCode("POP", "$2")
         self.addCode("POP", "$1")
         self.addCode(op, "$1", "$1", "$2")
         self.addCode("PUSHI", "$1")
 
+    def addBinaryExtendCode(self, op1, op2, op3):
+        self.addCode("POP", "$2")
+        self.addCode("POP", "$1")
+        self.addCode(op1, "$3", "$1", "$2")
+        self.addCode(op2, "$4", "$1", "$2")
+        self.addCode(op3, "$1", "$3", "$4")
+        self.addCode("PUSHI", "$1")
+
+    def addNEQOperation(self, op_eq, op_not):
+        self.addCode("POP", "$2")
+        self.addCode("POP", "$1")
+        self.addCode(op_eq, "$1", "$1", "$2")
+        self.addCode(op_not, "$1", "$1")
+        self.addCode("PUSHI", "$1")
+
     def addFramePointerInit(self):
-        self.addCode("PUSHI", "$FP")
+        self.addCode("ADDI", "$SP", "$SP", 1)
         self.addCode("SET", "$FP", "$SP")
 
     def addFramePointerEnd(self):
         self.addCode("SET", "$SP", "$FP")
-        self.addCode("POP", "$FP")
+        self.addCode("SUBI", "$SP", "$SP", 1)
 
     # TODO: K labelom je potrebne priradit cislo riadku + stlpca znaku
     def addConditionalBeginCode(self, position):
@@ -146,6 +147,9 @@ class interCode:
         self.addCode("LABEL", func_label)
         self.addFramePointerInit()
 
+    def addFunctionEndCode(self):
+        self.addFramePointerEnd()
+
     def addVarInitCode(self, o1, o2):
         self.addCode("SETN", o1, o2)
 
@@ -182,24 +186,75 @@ class interCode:
         generator = Generator()
 
         for row in self.code:
-            print(row["op"])
+            #print(row["op"])
 
+            # SETN [$SP] s_abc
+            # SETN [$SP] i_42
             if row["op"] == "SETN":
                 self.setAddressPos(row["o1"][2:], self.stack_pointer)
                 if row["o2"][0] == "s":
                         generator.generateSetNewString()
-                if row["o2"][0] == "i":
+                elif row["o2"][0] == "i":
                         generator.generateSetNewInt()
                 self.stack_pointer += 1
 
             if row["op"] == "SET":
-                o1_pos = self.getAddressPos(row["o1"][2:])
+                if row["o1"][0] == "v":
+                    o1_pos = self.getAddressPos(row["o1"][2:])
+                    row["o1"] = "[$FP + {}]".format(o1_pos)
+                
                 if row["o2"][0] == "s":
-                        generator.generateSetString(o1_pos, row["o2"][2:])
-                if row["o2"][0] == "i":
-                        generator.generateSetInt(o1_pos, row["o2"][2:])
-                if row["o2"][0] == "v":
-                        o2_pos = self.getAddressPos(row["o2"][2:])
-                        generator.generateSetVar(o1_pos, o2_pos)
+                    generator.generateSetString(row["o1"], row["o2"][2:])
+                elif row["o2"][0] == "i":
+                    generator.generateSetInt(row["o1"], row["o2"][2:])
+                elif row["o2"][0] == "v":
+                    o2_pos = self.getAddressPos(row["o2"][2:])
+                    generator.generateSetVar(row["o1"], o2_pos)
+                # Register etc.
+                else:
+                    generator.generateSetInt(row["o1"], row["o2"])
+
+
+            if (row["op"] == "ADDI" or row["op"] == "SUBI" or row["op"] == "MULI" or row["op"] == "DIVI" or
+                row["op"] == "EQI"  or row["op"] == "LTI"  or row["op"] == "GTI" or
+                row["op"] == "OR"   or row["op"] == "AND"):
+                generator.generateBinaryIntOp(row["op"], row["o1"], row["o2"], row["o3"])
+
+            if row["op"] == "NOT":
+                generator.generateSingleIntOp(row["op"], row["o1"], row["o2"], row["o3"])
+
+            # PUSHI i_45
+            # PUSHI v_3
+            # PUSHI $1
+            if row["op"] == "PUSHI":
+                if row["o1"][0] == "i":
+                    generator.generatePushInt(row["o1"][2:])
+                elif row["o1"][0] == "v":
+                    o1_pos = self.getAddressPos(row["o1"][2:])
+                    generator.generatePushInt("[$FP + " + str(o1_pos) + "]") 
+                else:
+                    generator.generatePushInt(row["o1"]) 
+                self.stack_pointer += 1
+
+            # PUSHS s_abcbd
+            # PUSHS v_3
+            # PUSHS $5
+            if row["op"] == "PUSHS":
+                generator.generatePushStr(row["o1"])
+
+            # POP [FP + 5]
+            # POP $5
+            if row["op"] == "POP":
+                if row["o1"][0] == "v":
+                    o1_pos = self.getAddressPos(row["o1"][2:])
+                    row["o1"] = "[$FP + {}]".format(o1_pos)
+                generator.generatePop(row["o1"])
+                self.stack_pointer -= 1
+
+            # LABEL func
+            if row["op"] == "LABEL":
+                generator.generateLabel(row["o1"])
+                
+
 
         print(generator.target_code)
