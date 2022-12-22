@@ -53,6 +53,15 @@ class vypaListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by vypaParser#function_body_not_in_func.
+    def enterFunction_body_not_in_func(self, ctx:vypaParser.Function_body_not_in_funcContext):
+        pass
+
+    # Exit a parse tree produced by vypaParser#function_body_not_in_func.
+    def exitFunction_body_not_in_func(self, ctx:vypaParser.Function_body_not_in_funcContext):
+        pass
+
+
     # Enter a parse tree produced by vypaParser#param_list.
     def enterParam_list(self, ctx:vypaParser.Param_listContext):
         pass
