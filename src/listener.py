@@ -237,7 +237,6 @@ class customListener(vypaListener):
         #self.code_table.addCode("POP", "$1")
         id = st.getSymbolID(ctx.ID().getText())
         #self.code_table.addVarAssignCode("v_" + str(id), "$1")
-        
 
         self.code_table.addCode("POP", "$1")
         id = self.symbol_table.getSymbolID(ctx.ID().getText())
