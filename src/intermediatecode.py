@@ -210,11 +210,7 @@ class interCode:
                 else:
                     generator.generateSetInt(row["o1"], row["o2"])
 
-<<<<<<< Updated upstream
-
-=======
             # ADDI $1, $1, $2
->>>>>>> Stashed changes
             if (row["op"] == "ADDI" or row["op"] == "SUBI" or row["op"] == "MULI" or row["op"] == "DIVI" or
                 row["op"] == "EQI"  or row["op"] == "LTI"  or row["op"] == "GTI" or
                 row["op"] == "OR"   or row["op"] == "AND"):
