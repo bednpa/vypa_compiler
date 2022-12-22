@@ -349,7 +349,7 @@ class customListener(vypaListener):
             if type(o1) == string:
                 #self.code_table.addConcatenationExpr()
                 pass
-            if type(o1) == int:
+            elif type(o1) == int:
                 self.code_table.addBinaryOperationCode("ADDI")
 
             
@@ -361,8 +361,9 @@ class customListener(vypaListener):
             o1 = self.expr_check.stack[-1]
             self.expr_check.addOp("<")
             if type(o1) == string:
-                
-            self.code_table.addBinaryOperationCode("LTI")
+                self.code_table.addBinaryOperationCodeString("LTI")
+            elif type(o1) == int:
+                self.code_table.addBinaryOperationCode("LTI")
             
         elif ctx.LOE():
             o1 = self.expr_check.stack[-1]

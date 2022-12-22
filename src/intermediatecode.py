@@ -70,7 +70,23 @@ class interCode:
         self.addCode(op, "$1", "$1", "$2")
         self.addCode("PUSHI", "$1")
 
+    def addBinaryOperationCodeString(self, op):
+        self.addCode("POP", "$2")
+        self.addCode("POP", "$1")
+        self.addCode("GETSIZE", "$1", "$1")
+        self.addCode("GETSIZE", "$2", "$2")
+        self.addCode(op, "$1", "$1", "$2")
+        self.addCode("PUSHI", "$1")
+
     def addBinaryExtendCode(self, op1, op2, op3):
+        self.addCode("POP", "$2")
+        self.addCode("POP", "$1")
+        self.addCode(op1, "$3", "$1", "$2")
+        self.addCode(op2, "$4", "$1", "$2")
+        self.addCode(op3, "$1", "$3", "$4")
+        self.addCode("PUSHI", "$1")
+
+    def addBinaryExtendCodeString(self, op1, op2, op3):
         self.addCode("POP", "$2")
         self.addCode("POP", "$1")
         self.addCode(op1, "$3", "$1", "$2")
