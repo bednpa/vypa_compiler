@@ -168,7 +168,8 @@ class exprChecker():
             self.stack = []
             return type[0]
         else:
-            return unexpectedError()
+            self.stack = []
+            return type
 
 
 #
@@ -229,3 +230,47 @@ class returnError(customException):
         self.what = "Return type " + str(type2) + " is different that type " + str(type1) + " of " + str(name) + "."
         self.err_code = 6
         
+        
+#
+# Class of variable not declared error.
+#      
+class embeddedRedeclared(customException):
+    def __init__(self, name):
+        self.what = "Can not redefine embedded function " + str(name) + "."
+        self.err_code = 7
+        
+        
+#
+# Class of bad params function call error.
+#      
+class badParamsFuncCall(customException):
+    def __init__(self, name, params):
+        if len(params) > 1:
+            self.what = "Can not call function " + str(name) + " with parameters of types"
+        else:
+            self.what = "Can not call function " + str(name) + " with parameter of type"
+        for p in params:
+            self.what += " " + p 
+        self.what += "."
+        self.err_code = 8
+        
+        
+#
+# Class of bad params count function call error.
+#      
+class badParamsCountFuncCall(customException):
+    def __init__(self, name, num):
+        if num > 1:
+            self.what = "Can not call function " + str(name) + " with " + str(num) + " parameters."
+        else:
+            self.what = "Can not call function " + str(name) + " with " + str(num) + " parameter."
+        self.err_code = 9
+        
+        
+#
+# Class of at least two different function call error.
+#      
+class differentFuncCalls(customException):
+    def __init__(self, name):
+        self.what = "Function " + str(name) + " is called two times with different types or number of parameters."
+        self.err_code = 10
