@@ -1,0 +1,16 @@
+//Variable test
+
+void main(void)
+{
+	int x;
+	x = 115;	
+
+	if (x)
+	{
+		x = 10;
+	}
+	else
+	{
+		x = 60 + 40;
+	}
+}
