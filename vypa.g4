@@ -26,6 +26,9 @@ function_body: LEFT_PARANTHESES_SHARP (statement)* RIGHT_PARANTHESES_SHARP
 function_body_not_in_func: LEFT_PARANTHESES_SHARP (statement)* RIGHT_PARANTHESES_SHARP
              ;
 
+function_body_not_in_func: LEFT_PARANTHESES_SHARP (statement)* RIGHT_PARANTHESES_SHARP
+             ;
+
 param_list: data_type ID (COMMA data_type ID)*
           ;
 
@@ -59,6 +62,7 @@ stmt_assignment: ID ASSIGN expression SEMICOLON
                ;
 
 stmt_while: while_header
+            function_body_not_in_func
             function_body_not_in_func
           ;
 

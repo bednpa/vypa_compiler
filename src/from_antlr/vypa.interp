@@ -89,6 +89,7 @@ definitions
 function_definition
 function_body
 function_body_not_in_func
+function_body_not_in_func
 param_list
 type
 data_type

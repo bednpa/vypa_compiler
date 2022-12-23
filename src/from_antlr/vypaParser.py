@@ -711,6 +711,7 @@ class vypaParser ( Parser ):
 
         localctx = vypaParser.Param_listContext(self, self._ctx, self.state)
         self.enterRule(localctx, 12, self.RULE_param_list)
+        self.enterRule(localctx, 12, self.RULE_param_list)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
@@ -773,6 +774,7 @@ class vypaParser ( Parser ):
 
         localctx = vypaParser.TypeContext(self, self._ctx, self.state)
         self.enterRule(localctx, 14, self.RULE_type)
+        self.enterRule(localctx, 14, self.RULE_type)
         try:
             self.state = 121
             self._errHandler.sync(self)
@@ -831,6 +833,7 @@ class vypaParser ( Parser ):
 
         localctx = vypaParser.Data_typeContext(self, self._ctx, self.state)
         self.enterRule(localctx, 16, self.RULE_data_type)
+        self.enterRule(localctx, 16, self.RULE_data_type)
         try:
             self.state = 125
             self._errHandler.sync(self)
@@ -887,6 +890,7 @@ class vypaParser ( Parser ):
     def prim_type(self):
 
         localctx = vypaParser.Prim_typeContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 18, self.RULE_prim_type)
         self.enterRule(localctx, 18, self.RULE_prim_type)
         self._la = 0 # Token type
         try:
@@ -960,9 +964,11 @@ class vypaParser ( Parser ):
 
         localctx = vypaParser.StatementContext(self, self._ctx, self.state)
         self.enterRule(localctx, 20, self.RULE_statement)
+        self.enterRule(localctx, 20, self.RULE_statement)
         try:
             self.state = 136
             self._errHandler.sync(self)
+            la_ = self._interp.adaptivePredict(self._input,12,self._ctx)
             la_ = self._interp.adaptivePredict(self._input,12,self._ctx)
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
@@ -1060,6 +1066,7 @@ class vypaParser ( Parser ):
 
         localctx = vypaParser.Stmt_local_varsContext(self, self._ctx, self.state)
         self.enterRule(localctx, 22, self.RULE_stmt_local_vars)
+        self.enterRule(localctx, 22, self.RULE_stmt_local_vars)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
@@ -1128,6 +1135,7 @@ class vypaParser ( Parser ):
 
         localctx = vypaParser.Stmt_assignmentContext(self, self._ctx, self.state)
         self.enterRule(localctx, 24, self.RULE_stmt_assignment)
+        self.enterRule(localctx, 24, self.RULE_stmt_assignment)
         try:
             self.enterOuterAlt(localctx, 1)
             self.state = 149
@@ -1160,6 +1168,8 @@ class vypaParser ( Parser ):
 
         def function_body_not_in_func(self):
             return self.getTypedRuleContext(vypaParser.Function_body_not_in_funcContext,0)
+        def function_body_not_in_func(self):
+            return self.getTypedRuleContext(vypaParser.Function_body_not_in_funcContext,0)
 
 
         def getRuleIndex(self):
@@ -1179,6 +1189,7 @@ class vypaParser ( Parser ):
     def stmt_while(self):
 
         localctx = vypaParser.Stmt_whileContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 26, self.RULE_stmt_while)
         self.enterRule(localctx, 26, self.RULE_stmt_while)
         try:
             self.enterOuterAlt(localctx, 1)
@@ -1232,6 +1243,7 @@ class vypaParser ( Parser ):
     def while_header(self):
 
         localctx = vypaParser.While_headerContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 28, self.RULE_while_header)
         self.enterRule(localctx, 28, self.RULE_while_header)
         try:
             self.enterOuterAlt(localctx, 1)
@@ -1301,6 +1313,7 @@ class vypaParser ( Parser ):
     def stmt_func_call(self):
 
         localctx = vypaParser.Stmt_func_callContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 30, self.RULE_stmt_func_call)
         self.enterRule(localctx, 30, self.RULE_stmt_func_call)
         self._la = 0 # Token type
         try:
@@ -1404,6 +1417,7 @@ class vypaParser ( Parser ):
 
         localctx = vypaParser.Stmt_method_callContext(self, self._ctx, self.state)
         self.enterRule(localctx, 32, self.RULE_stmt_method_call)
+        self.enterRule(localctx, 32, self.RULE_stmt_method_call)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
@@ -1492,6 +1506,7 @@ class vypaParser ( Parser ):
     def stmt_if(self):
 
         localctx = vypaParser.Stmt_ifContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 34, self.RULE_stmt_if)
         self.enterRule(localctx, 34, self.RULE_stmt_if)
         try:
             self.enterOuterAlt(localctx, 1)
@@ -1833,6 +1848,7 @@ class vypaParser ( Parser ):
             self.state = 234
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,21,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,21,self._ctx)
             if la_ == 1:
                 self.state = 215
                 self.match(vypaParser.LEFT_PARANTHESES_SMOOTH)
@@ -1869,6 +1885,7 @@ class vypaParser ( Parser ):
             elif la_ == 4:
                 self.state = 229
                 self._errHandler.sync(self)
+                la_ = self._interp.adaptivePredict(self._input,20,self._ctx)
                 la_ = self._interp.adaptivePredict(self._input,20,self._ctx)
                 if la_ == 1:
                     self.state = 225
@@ -1914,6 +1931,7 @@ class vypaParser ( Parser ):
             self.state = 259
             self._errHandler.sync(self)
             _alt = self._interp.adaptivePredict(self._input,23,self._ctx)
+            _alt = self._interp.adaptivePredict(self._input,23,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt==1:
                     if self._parseListeners is not None:
@@ -1921,6 +1939,7 @@ class vypaParser ( Parser ):
                     _prevctx = localctx
                     self.state = 257
                     self._errHandler.sync(self)
+                    la_ = self._interp.adaptivePredict(self._input,22,self._ctx)
                     la_ = self._interp.adaptivePredict(self._input,22,self._ctx)
                     if la_ == 1:
                         localctx = vypaParser.ExpressionContext(self, _parentctx, _parentState)
@@ -2031,6 +2050,7 @@ class vypaParser ( Parser ):
              
                 self.state = 261
                 self._errHandler.sync(self)
+                _alt = self._interp.adaptivePredict(self._input,23,self._ctx)
                 _alt = self._interp.adaptivePredict(self._input,23,self._ctx)
 
         except RecognitionException as re:

@@ -64,6 +64,11 @@ class interCode:
         self.addCode(op, "$1", "$1")
         self.addCode("PUSHI", "$1")
 
+    def addSingleOperatonCode(self, op):
+        self.addCode("POP", "$1")
+        self.addCode(op, "$1", "$1")
+        self.addCode("PUSHI", "$1")
+
     def addBinaryOperationCode(self, op):
         self.addCode("POP", "$2")
         self.addCode("POP", "$1")
@@ -94,10 +99,12 @@ class interCode:
 
     def addFramePointerInit(self):
         self.addCode("ADDI", "$SP", "$SP", 1)
+        self.addCode("ADDI", "$SP", "$SP", 1)
         self.addCode("SET", "$FP", "$SP")
 
     def addFramePointerEnd(self):
         self.addCode("SET", "$SP", "$FP")
+        self.addCode("SUBI", "$SP", "$SP", 1)
         self.addCode("SUBI", "$SP", "$SP", 1)
 
     # TODO: K labelom je potrebne priradit cislo riadku + stlpca znaku
@@ -119,6 +126,7 @@ class interCode:
     def addConditionalEndCode(self, position):
         # else stmt ..
         self.addCode("LABEL", "else_end_" + str(position))
+
 
 
     def addWhileBeginCode(self, position):
@@ -187,7 +195,10 @@ class interCode:
 
         for row in self.code:
             #print(row["op"])
+            #print(row["op"])
 
+            # SETN [$SP] s_abc
+            # SETN [$SP] i_42
             # SETN [$SP] s_abc
             # SETN [$SP] i_42
             if row["op"] == "SETN":
@@ -195,10 +206,15 @@ class interCode:
                 if row["o2"][0] == "s":
                         generator.generateSetNewString()
                 elif row["o2"][0] == "i":
+                elif row["o2"][0] == "i":
                         generator.generateSetNewInt()
                 self.stack_pointer += 1
 
             if row["op"] == "SET":
+                if row["o1"][0] == "v":
+                    o1_pos = self.getAddressPos(row["o1"][2:])
+                    row["o1"] = "[$FP + {}]".format(o1_pos)
+                
                 if row["o1"][0] == "v":
                     o1_pos = self.getAddressPos(row["o1"][2:])
                     row["o1"] = "[$FP + {}]".format(o1_pos)
