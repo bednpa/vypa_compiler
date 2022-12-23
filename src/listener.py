@@ -178,7 +178,7 @@ class customListener(vypaListener):
         
         self.func_table.addFuncParams(self.act_func, params)
  
-            types.append(d.getText())
+        types.append(d.getText())
         for i in range(len(ids)):
             params.append({"id": ids[i], "type": types[i]})
         

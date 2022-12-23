@@ -206,7 +206,6 @@ class interCode:
                 if row["o2"][0] == "s":
                         generator.generateSetNewString()
                 elif row["o2"][0] == "i":
-                elif row["o2"][0] == "i":
                         generator.generateSetNewInt()
                 self.stack_pointer += 1
 
