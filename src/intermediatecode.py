@@ -78,11 +78,18 @@ class interCode:
         self.addCode(op3, "$1", "$3", "$4")
         self.addCode("PUSHI", "$1")
 
-    def addNEQOperation(self, op_eq, op_not):
+    def addNEQOperation(self):
         self.addCode("POP", "$2")
         self.addCode("POP", "$1")
-        self.addCode(op_eq, "$1", "$1", "$2")
-        self.addCode(op_not, "$1", "$1")
+        self.addCode("EQI", "$1", "$1", "$2")
+        self.addCode("NOT", "$1", "$1")
+        self.addCode("PUSHI", "$1")
+
+    def addNEQOperationString(self):
+        self.addCode("POP", "$2")
+        self.addCode("POP", "$1")
+        self.addCode("EQS", "$1", "$1", "$2")
+        self.addCode("NOT", "$1", "$1")
         self.addCode("PUSHI", "$1")
 
     def addFramePointerInit(self):
@@ -96,55 +103,52 @@ class interCode:
     # TODO: K labelom je potrebne priradit cislo riadku + stlpca znaku
     def addConditionalBeginCode(self, position):
         # expr stmt ...
-        self.addCode("JUMPNZ", "if_" + position, "$1")
-        self.addCode("JUMP", "else_" + position)
-        self.addCode("LABEL", "if_" + position)
+        self.addCode("JUMPNZ", "if_" + str(position), "$1")
+        self.addCode("JUMP", "else_" + str(position))
+        self.addCode("LABEL", "if_" + str(position))
         #if stmt ...
         
     # The position musi byt rovnaky pre ako pre najblizsi if
     def addConditionalElseCode(self, position):
         # if stmt ...
-
-        self.addCode("JUMP", "else_end_" + position)
+        self.addCode("JUMP", "else_end_" + str(position))
         # Start of else
-        self.addCode("LABEL", "else_" + position)
+        self.addCode("LABEL", "else_" + str(position))
         # else stmt ..
 
     def addConditionalEndCode(self, position):
         # else stmt ..
-        self.addCode("LABEL", "else_end_" + position)
+        self.addCode("LABEL", "else_end_" + str(position))
 
 
     def addWhileBeginCode(self, position):
-        self.addCode("LABEL", "while_begin_" + position)
+        self.addCode("LABEL", "while_begin_" + str(position))
         # expr stmt ...
 
     def addWhileMiddleCode(self, position):
         # expr stmt ...
-        self.addCode("POP", "$1")
-        self.addCode("JUMPNZ", "while_" + position, "$1")
-        self.addCode("JUMP", "while_end_" + position)
-
+        self.addCode("JUMPNZ", "while_" + str(position), "$1")
+        self.addCode("JUMP", "while_end_" + str(position))
         #Start of while body if expr is true
-        self.addCode("LABEL", "while_" + position)
-        # self.addFramePointerInit(self)
+        self.addCode("LABEL", "while_" + str(position))
         # while stmt ...
         
     def addWhileEndCode(self, position):
         #while stmt ...
-        # self.addFramePointerEnd(self)
-        self.addCode("JUMP", "while_begin_" + position)
-        self.addCode("LABEL", "while_end_" + position)
+        self.addCode("JUMP", "while_begin_" + str(position))
+        self.addCode("LABEL", "while_end_" + str(position))
 
     def addFunctionCallCode(self, func_label):
         self.addCode("CALL", "[$SP]", func_label)
 
     def addFunctionDefinitionCode(self, func_label):
+        # self.addCode("JUMP", "end_" + func_label)
         self.addCode("LABEL", func_label)
         self.addFramePointerInit()
 
     def addFunctionEndCode(self):
         self.addFramePointerEnd()
+        # self.addCode("LABEL", "end_" + func_label)
 
     def addVarInitCode(self, o1, o2):
         self.addCode("SETN", o1, o2)
@@ -248,8 +252,12 @@ class interCode:
                 self.stack_pointer -= 1
 
             # LABEL func
-            if row["op"] == "LABEL":
-                generator.generateLabel(row["o1"])
+            if row["op"] == "LABEL" or row["op"] == "JUMP" or row["op"] == "RETURN":
+                generator.generateUnaryOperation(row["op"], row["o1"])
+
+            # JUMPNZ func, $1
+            if row["op"] == "JUMPNZ":
+                generator.generateBinaryOperation(row["op"], row["o1"], row["o2"])
                 
 
 

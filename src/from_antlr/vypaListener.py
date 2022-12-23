@@ -170,6 +170,24 @@ class vypaListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by vypaParser#case_if.
+    def enterCase_if(self, ctx:vypaParser.Case_ifContext):
+        pass
+
+    # Exit a parse tree produced by vypaParser#case_if.
+    def exitCase_if(self, ctx:vypaParser.Case_ifContext):
+        pass
+
+
+    # Enter a parse tree produced by vypaParser#case_else.
+    def enterCase_else(self, ctx:vypaParser.Case_elseContext):
+        pass
+
+    # Exit a parse tree produced by vypaParser#case_else.
+    def exitCase_else(self, ctx:vypaParser.Case_elseContext):
+        pass
+
+
     # Enter a parse tree produced by vypaParser#if_header.
     def enterIf_header(self, ctx:vypaParser.If_headerContext):
         pass

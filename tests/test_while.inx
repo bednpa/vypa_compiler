@@ -1,0 +1,22 @@
+//While test
+
+void main(void)
+{
+	int x;
+	x = 115;	
+
+    while(x < 116) 
+    {
+        x = x + 1;
+    }
+
+    x = 40;
+	/* if (x)
+	{
+		x = 10;
+	}
+	else
+	{
+		x = 60 + 40;
+	} */
+}

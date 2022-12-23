@@ -72,8 +72,14 @@ stmt_method_call: (THIS | SUPER | ID) DOT ID LEFT_PARANTHESES_SMOOTH (expression
                 ;
 
 stmt_if: if_header
-         function_body_not_in_func
-         ELSE function_body_not_in_func
+         case_if
+         ELSE case_else
+       ;
+
+case_if: function_body_not_in_func
+       ;
+
+case_else: function_body_not_in_func
        ;
 
 if_header: IF LEFT_PARANTHESES_SMOOTH expression RIGHT_PARANTHESES_SMOOTH

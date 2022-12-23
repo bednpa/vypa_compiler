@@ -2,6 +2,7 @@ class Generator:
 
     def __init__(self):
         self.target_code = ""
+        self.fun_target_code = ""
         self.generateHeader()
 
     def generateHeader(self):
@@ -81,6 +82,9 @@ class Generator:
         self.target_code += "SET {}, [$SP]\n".format(o1)
         self.target_code += "SUBI $SP, $SP, 1\n\n"
 
-    def generateLabel(self, o1):
-        self.target_code += "LABEL {}\n".format(o1)
+    def generateUnaryOperation(self, op, o1):
+        self.target_code += "{} {}\n".format(op, o1)
+
+    def generateBinaryOperation(self, op, o1, o2):
+        self.target_code += "{} {}, {}\n".format(op, o1, o2)
         
