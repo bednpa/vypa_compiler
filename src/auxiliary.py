@@ -1,9 +1,8 @@
 #
-# Auxiliary files, e.g. custum exceptions, expression evaluation ,...
+# Task: Compiler for VYPlanguage
+# Author(s): Pavel Bednar (xbedna73), Samuel Gajdos (xgajdo26)
+# Description: Auxiliary files, e.g. custum exceptions, expression evaluation, ...
 #
-from antlr4.error.ErrorListener import ErrorListener
-
-
 SUCCESS = 0
 SYNTAX_ERROR = 12
 SEMANTIC_ERROR_TYPES = 13
@@ -34,7 +33,8 @@ class exprChecker():
     # Adds return type of two top elements.
     #
     def addOp(self, op):
-        # not
+        
+        # Not.
         if (op == "!"):
             o1 = self.stack.pop()
             if (o1 == "int"):
@@ -42,7 +42,7 @@ class exprChecker():
             else:
                 raise typeError(op, None, o2)
                 
-        # mul
+        # Mul.
         elif (op == "*"):
             o2 = self.stack.pop()
             o1 = self.stack.pop()
@@ -51,7 +51,7 @@ class exprChecker():
             else:
                 raise typeError(op, o1, o2)
                 
-        # div
+        # Div.
         elif (op == "/"):
             o2 = self.stack.pop()
             o1 = self.stack.pop()
@@ -60,7 +60,7 @@ class exprChecker():
             else:
                 raise typeError(op, o1, o2)
                 
-        # add
+        # Add.
         elif (op == "+"):
             o2 = self.stack.pop()
             o1 = self.stack.pop()
@@ -71,7 +71,7 @@ class exprChecker():
             else:
                 raise typeError(op, o1, o2)
                 
-        # minus
+        # Minus.
         elif (op == "-"):
             o2 = self.stack.pop()
             o1 = self.stack.pop()
@@ -80,7 +80,7 @@ class exprChecker():
             else:
                 raise typeError(op, o1, o2)
                 
-        # less
+        # Less.
         elif (op == "<"):
             o2 = self.stack.pop()
             o1 = self.stack.pop()
@@ -91,7 +91,7 @@ class exprChecker():
             else:
                 raise typeError(op, o1, o2)
                 
-        # less or equal
+        # Less or equal.
         elif (op == "<="):
             o2 = self.stack.pop()
             o1 = self.stack.pop()
@@ -102,7 +102,7 @@ class exprChecker():
             else:
                 raise typeError(op, o1, o2)
                 
-        # greater
+        # Greater.
         elif (op == ">"):
             o2 = self.stack.pop()
             o1 = self.stack.pop()
@@ -113,7 +113,7 @@ class exprChecker():
             else:
                 raise typeError(op, o1, o2)
                 
-        # greater or equal
+        # Greater or equal.
         elif (op == ">="):
             o2 = self.stack.pop()
             o1 = self.stack.pop()
@@ -124,7 +124,7 @@ class exprChecker():
             else:
                 raise typeError(op, o1, o2)
                 
-        # equal
+        # Equal.
         elif (op == "=="):
             o2 = self.stack.pop()
             o1 = self.stack.pop()
@@ -133,7 +133,7 @@ class exprChecker():
             else:
                 raise typeError(op, o1, o2)
                 
-        # not equal
+        # Not equal.
         elif (op == "!="):
             o2 = self.stack.pop()
             o1 = self.stack.pop()
@@ -142,7 +142,7 @@ class exprChecker():
             else:
                 raise typeError(op, o1, o2)
                 
-        # and
+        # And.
         elif (op == "&&"):
             o2 = self.stack.pop()
             o1 = self.stack.pop()
@@ -151,7 +151,7 @@ class exprChecker():
             else:
                 raise typeError(op, o1, o2)
                 
-        # or
+        # Or.
         elif (op == "||"):
             o2 = self.stack.pop()
             o1 = self.stack.pop()
@@ -163,10 +163,7 @@ class exprChecker():
         else:
             raise unexpectedError()
                 
-    
-    #
-    # Returns type of whole expression.
-    #    
+    # Returns type of whole expression.  
     def returnType(self):
         if len(self.stack) == 0:
             return None
@@ -177,7 +174,6 @@ class exprChecker():
         else:
             self.stack = []
             return type
-
 
 
 #
@@ -231,8 +227,11 @@ class ifHeaderError(customException):
     def __init__(self, type):
         self.what = "Type " + str(type) + " can not be in if header."
         self.err_code = 5
-        
-        
+
+
+#        
+# Class for type error in return statement.
+# 
 class returnError(customException):
     def __init__(self, name, type1, type2):
         self.what = "Return type " + str(type2) + " is different that type " + str(type1) + " of " + str(name) + "."
@@ -290,4 +289,3 @@ class badFuncTypeInExpr(customException):
     def __init__(self, name, real_type, expected_type):
         self.what = "Type " + str(real_type) + " of function " + str(name) + " do not match expected type " + str(expected_type) + " in expression."
         self.err_code = SEMANTIC_ERROR_TYPES
-

@@ -1,14 +1,21 @@
 #
-# Custom class for parse tree traversal.
+# Task: Compiler for VYPlanguage
+# Author(s): Pavel Bednar (xbedna73), Samuel Gajdos (xgajdo26)
+# Description: Custom classes for parse tree traversal.
 #
-import string
+import string # TODO je to potreba?
 from from_antlr.vypaListener import vypaListener
 from from_antlr.vypaParser import vypaParser
 from auxiliary import *
 
 
+#
+# Class for custom listener.
+#
 class customListener(vypaListener):
-    # init
+    
+    
+    # Init.
     def __init__(self, func_table, code_table):
         self.func_table = func_table
         self.code_table = code_table
@@ -18,6 +25,7 @@ class customListener(vypaListener):
         self.label_counter = 0
         
         
+    # Checks function parameters types during functions calls.
     def checkFuncTypes(self, name, call_params):
         defined_params = self.func_table.getFuncParams(name)
         
@@ -28,7 +36,6 @@ class customListener(vypaListener):
                 call_params = [call_params]
             raise badParamsCountFuncCall(name, len(call_params))
         
-                
         if not (call_params == None and defined_params == None):
             if type(call_params) != list:
                 call_params = [call_params]
@@ -450,10 +457,13 @@ class customListener(vypaListener):
     
     
     
-    
-# For late functions definitions
+#    
+# Class for custom listener to handle late function definitions
+#
 class customPreListener(vypaListener):
-    # init
+    
+    
+    # Init.
     def __init__(self, func_table):
         self.func_table = func_table
         self.act_func = None
@@ -469,11 +479,9 @@ class customPreListener(vypaListener):
         self.act_func = name
 
 
-
     # Exit a parse tree produced by vypaParser#function_definition.
     def exitFunction_definition(self, ctx:vypaParser.Function_definitionContext):
         self.act_func = None
-        
 
 
     # Enter a parse tree produced by vypaParser#param_list.
@@ -495,6 +503,4 @@ class customPreListener(vypaListener):
     # Exit a parse tree produced by vypaParser#param_list.
     def exitParam_list(self, ctx:vypaParser.Param_listContext):
         pass
-
-
    

@@ -1,12 +1,14 @@
 #
-# File for implementation of symbol table.
+# Task: Compiler for VYPlanguage
+# Author(s): Pavel Bednar (xbedna73), Samuel Gajdos (xgajdo26)
+# Description: Implementation of symbol table.
 #
 from auxiliary import *
 from tabulate import tabulate
         
 
 #
-# Class for symbol table.
+# Class for table of all variables in corresponding function.
 #
 class symbolTable:
     
@@ -85,7 +87,7 @@ class funcTable():
         
         
     #
-    #
+    # Adding new function.
     #
     def addFunc(self, name, type, params=None):
         for _, val in self.ft.items():
@@ -100,7 +102,7 @@ class funcTable():
         
         
     #
-    #
+    # Fill parameters to existing function.
     #
     def addFuncParams(self, name, params):
         was_declared = False
@@ -119,7 +121,7 @@ class funcTable():
         
         
     #
-    #
+    # Returns type of given function.
     #
     def getFuncType(self, name):
         for key, val in self.ft.items(): 
@@ -129,7 +131,7 @@ class funcTable():
     
     
     #
-    #
+    # Returns parameters of given function.
     #
     def getFuncParams(self, name):
         for key, val in self.ft.items(): 
@@ -139,7 +141,7 @@ class funcTable():
     
     
     #
-    #
+    # Returns ID of given function.
     #
     def getFuncID(self, name, excpt=True):
         for key, val in self.ft.items(): 
@@ -152,7 +154,7 @@ class funcTable():
         
     
     #
-    #
+    # Returns table of all varibles in scope of given function.
     #
     def getFuncST(self, name):
         for key, val in self.ft.items(): 
@@ -162,7 +164,7 @@ class funcTable():
     
     
     #
-    #
+    # Returns unique (global) ID to variable in function.
     #
     def getUniqueID(self, func_name, var_name):
         for k1, v1 in self.ft.items(): 
@@ -215,7 +217,7 @@ class funcTable():
         
         
     #
-    # Prints function table and all symbol tables to the output.
+    # Prints function table and all variable tables to the output.
     #
     def dumpAll(self):
         ft_to_print = []

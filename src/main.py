@@ -1,5 +1,7 @@
 #
-# Main compiler file
+# Task: Compiler for VYPlanguage
+# Author(s): Pavel Bednar (xbedna73), Samuel Gajdos (xgajdo26)
+# Description: Main compiler file.
 #
 import sys
 from antlr4 import *
@@ -12,6 +14,9 @@ from symboltable import funcTable
 from intermediatecode import interCode
 
 
+#
+# Main function.
+#
 def main(argv):
     input_stream = FileStream(argv[1])
     lexer = vypaLexer(input_stream) 
@@ -33,7 +38,7 @@ def main(argv):
     try:
         walker.walk(printer, tree)
     except customException as e:
-        print(e.what)
+        print(e.what, file=sys.stderr)
         exit(e.err_code)
  
     printer = customListener(func_table, code_table)
@@ -41,12 +46,12 @@ def main(argv):
     try:
         walker.walk(printer, tree)
     except customException as e:
-        print(e.what)
+        print(e.what, file=sys.stderr)
         exit(e.err_code)
         
     exit(SUCCESS)
-        
-        
- 
+          
+
+# Start of the program.
 if __name__ == '__main__':
     main(sys.argv)
