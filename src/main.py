@@ -18,7 +18,11 @@ from intermediatecode import interCode
 # Main function.
 #
 def main(argv):
-    input_stream = FileStream(argv[1])
+    try:
+        input_stream = FileStream(argv[1]) 
+    except Exception as e:
+        print(e.args[1], argv[1], file=sys.stderr)
+        exit(e.args[0])
     lexer = vypaLexer(input_stream) 
     stream = CommonTokenStream(lexer)
     
@@ -27,7 +31,6 @@ def main(argv):
     try:
         tree = parser.program()
     except:
-        print("Parse error") # to be deleted TODO
         exit(SYNTAX_ERROR)
     
     func_table = funcTable()
