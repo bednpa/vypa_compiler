@@ -1,18 +1,27 @@
 //test
 
-int func1(string x, int y)
-{
-    return y;
-}
-
 void main(void)
 {
 	int x;
     x=func("x",func("s",x+2+8+x));
     x = 1 + 1;
+    print(x);
 }
 
 int func(string x, int y)
 {
-    return y;
+    if(func1("X"+"s"+x,1-5+y)){
+        int x;
+        return y;
+    }
+    else{
+        int x;
+        return 0;
+    }
+
+}
+
+int func1(string x1, int y1)
+{
+    return y1;
 }

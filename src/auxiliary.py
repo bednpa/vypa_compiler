@@ -1,6 +1,13 @@
 #
 # Auxiliary files, e.g. custum exceptions, expression evaluation ,...
 #
+from antlr4.error.ErrorListener import ErrorListener
+
+
+SUCCESS = 0
+SYNTAX_ERROR = 12
+SEMANTIC_ERROR_TYPES = 13
+SEMANTIC_ERROR_OTHER = 14
 
 
 #
@@ -172,6 +179,7 @@ class exprChecker():
             return type
 
 
+
 #
 # Pure base class of custom exceptions.
 #
@@ -186,7 +194,7 @@ class customException(Exception):
 class alreadyDeclared(customException):
     def __init__(self, name):
         self.what = str(name) + " already declared."
-        self.err_code = 1
+        self.err_code = SEMANTIC_ERROR_OTHER
         
   
 #
@@ -195,7 +203,7 @@ class alreadyDeclared(customException):
 class notDeclared(customException):
     def __init__(self, name):
         self.what = str(name) + " not declared."
-        self.err_code = 2
+        self.err_code = SEMANTIC_ERROR_OTHER
         
         
 #
@@ -204,7 +212,7 @@ class notDeclared(customException):
 class typeError(customException):
     def __init__(self, op, type1, type2):
         self.what = "type error, " + str(type1) + " " + str(op) + " " + str(type2) + " is not allowed."
-        self.err_code = 3        
+        self.err_code = SEMANTIC_ERROR_TYPES    
         
 
 #
@@ -213,7 +221,7 @@ class typeError(customException):
 class unexpectedError(customException):
     def __init__(self):
         self.what = "unexpected error happens."
-        self.err_code = 4
+        self.err_code = SEMANTIC_ERROR_OTHER
         
         
 #
@@ -228,7 +236,7 @@ class ifHeaderError(customException):
 class returnError(customException):
     def __init__(self, name, type1, type2):
         self.what = "Return type " + str(type2) + " is different that type " + str(type1) + " of " + str(name) + "."
-        self.err_code = 6
+        self.err_code = SEMANTIC_ERROR_TYPES
         
         
 #
@@ -237,7 +245,7 @@ class returnError(customException):
 class embeddedRedeclared(customException):
     def __init__(self, name):
         self.what = "Can not redefine embedded function " + str(name) + "."
-        self.err_code = 7
+        self.err_code = SEMANTIC_ERROR_OTHER
         
         
 #
@@ -281,4 +289,5 @@ class differentFuncCalls(customException):
 class badFuncTypeInExpr(customException):
     def __init__(self, name, real_type, expected_type):
         self.what = "Type " + str(real_type) + " of function " + str(name) + " do not match expected type " + str(expected_type) + " in expression."
-        self.err_code = 11
+        self.err_code = SEMANTIC_ERROR_TYPES
+

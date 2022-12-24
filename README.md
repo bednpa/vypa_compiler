@@ -4,8 +4,8 @@ Hello compilers world!
 
 ## Notes
 
-ST, zpusob reseni   
-jak na unikatnost jmen objektu/funkci/promennych? ST?
+Zkontrolovat navratove hodnoty chyb   
+Co je lex error?
 
 ## Checking
 
