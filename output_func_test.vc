@@ -1,0 +1,7 @@
+Running available tests ...
+*********************************
+test name: ./tests/test_print.in
+description: Print test
+- - - - - - - - - - - - - - - - -
+y not declared.
+*********************************

@@ -87,15 +87,22 @@ class customListener(vypaListener):
         self.act_func = name
 
         self.code_table.addFunctionDefinitionCode(name)
+        # self.code_table.putParamsToTable(self.func_table.getFuncParams(name))
 
     # Exit a parse tree produced by vypaParser#function_definition.
     def exitFunction_definition(self, ctx:vypaParser.Function_definitionContext):
         self.act_func = None
         
+        
     
     # Enter a parse tree produced by vypaParser#function_body.
     def enterFunction_body(self, ctx:vypaParser.Function_bodyContext):
-        pass
+        defined_params = self.func_table.getFuncParams(self.act_func)
+        if defined_params != None:
+            length = len(defined_params)
+            for i in range(length):
+                unique_id = self.func_table.getUniqueID(self.act_func, defined_params[i]["id"])
+                self.code_table.setAddressPos(unique_id, i - length - 1)
 
     # Exit a parse tree produced by vypaParser#function_body.
     def exitFunction_body(self, ctx:vypaParser.Function_bodyContext):
@@ -172,17 +179,18 @@ class customListener(vypaListener):
     # Enter a parse tree produced by vypaParser#stmt_local_vars.
     def enterStmt_local_vars(self, ctx:vypaParser.Stmt_local_varsContext):
         for name in ctx.ID():
+            id = self.func_table.getUniqueID(self.act_func, name.getText())
             if (ctx.data_type().getText() == "int"):
                 st = self.func_table.getFuncST(self.act_func)
                 st.addSymbol(name.getText(), ctx.data_type().getText())
 
-                self.code_table.addVarInitCode("v_" + str(st.getSymbolID(name.getText())) , "i_0")
+                self.code_table.addVarInitCode("v_" + id , "i_0")
 
             elif (ctx.data_type().getText() == "string"):
                 st = self.func_table.getFuncST(self.act_func)
                 st.addSymbol(name.getText(), ctx.data_type().getText())
 
-                self.code_table.addVarInitCode("v_" + str(st.getSymbolID(name.getText())) , "s_")
+                self.code_table.addVarInitCode("v_" + id , "s_")
 
             else:
                 self.func_table.addSymbol(name.getText(), ctx.data_type().getText())
@@ -251,6 +259,24 @@ class customListener(vypaListener):
         else:
             self.checkFuncTypes(name, call_params)
 
+        defined_params = self.func_table.getFuncParams(name)
+        print(defined_params)
+        if name == "printi":
+            self.code_table.addFramePointerInit()
+            for i in range(len(defined_params)):
+                unique_id = self.func_table.getUniqueID("printi", defined_params[i]["id"])
+                if defined_params[i]["type"] == "int":
+                    self.code_table.addPrintInt(unique_id)
+                elif defined_params[i]["type"] == "string":
+                    self.code_table.addPrintString(unique_id)
+            self.code_table.addFramePointerEnd()
+
+        else:
+            self.code_table.addCode("CALL", "[$SP]", name)
+            for i in range(len(defined_params)):
+                self.code_table.addCode("POP", "$6")
+            self.code_table.addCode("PUSHI", "$1")
+
 
     # Enter a parse tree produced by vypaParser#stmt_method_call.
     def enterStmt_method_call(self, ctx:vypaParser.Stmt_method_callContext):
@@ -316,7 +342,8 @@ class customListener(vypaListener):
 
         self.code_table.addCode("POP", "$1")
         self.code_table.addFunctionEndCode()
-        self.code_table.addCode("RETURN", "[$SP]")
+        if self.act_func != "main":
+            self.code_table.addCode("RETURN", "[$SP]")
 
 
     # Enter a parse tree produced by vypaParser#expression.
@@ -331,11 +358,12 @@ class customListener(vypaListener):
             type = st.getSymbolType(ctx.getText())
             self.expr_check.addType(type)
             
-            id = st.getSymbolID(ctx.getText())
+            id = self.func_table.getUniqueID(self.act_func, ctx.getText())
             if (type == "string"):
                 self.code_table.addCode("PUSHS", "v_" + str(id))
             elif (type == "int"):
                 self.code_table.addCode("PUSHI", "v_" + str(id))
+
             
         elif ctx.INT_VAL():
             self.expr_check.addType("int")
