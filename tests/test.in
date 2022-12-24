@@ -8,7 +8,7 @@ int func1(string x, int y)
 void main(void)
 {
 	int x;
-    func("x"+"g",func("s",x+2+8+x)+1+6);
+    x=func("x",func("s",x+2+8+x));
     x = 1 + 1;
 }
 

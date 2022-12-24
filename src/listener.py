@@ -9,15 +9,11 @@ from auxiliary import *
 
 class customListener(vypaListener):
     # init
-    def __init__(self, func_table, funcs_to_be_defined, code_table):
+    def __init__(self, func_table, code_table):
         self.func_table = func_table
-        self.late_func_call_check = {}
-        self.late_func_type_check = {}
-        self.late_func_type_check_fn = {}
         self.code_table = code_table
         self.expr_check = [exprChecker()]
         self.act_func = None
-        self.ret_func_types_cntr = 0
 
         self.label_counter = 0
         
@@ -42,36 +38,6 @@ class customListener(vypaListener):
             for i in range(len(call_params)):
                 if call_params[i] != defined_params[i]["type"]:
                     raise badParamsFuncCall(name, call_params)
-    
-            #dp = []
-            #for d in defined_params:
-            #    dp.append(d["type"])
-            #if not self.typesEq(call_params, dp):
-            #    raise badParamsFuncCall(name, call_params)
-                
-                
-    def checkLateFuncTypes(self):
-        for key, val in self.late_func_call_check.items():
-            self.checkFuncTypes(key, val)
-            
-            
-    def checkLateFuncReturnType(self):
-        for i in range(self.ret_func_types_cntr):
-            name = self.late_func_type_check_fn[i]
-            type = self.func_table.getFuncType(name)
-            if (self.late_func_type_check[i] != type):
-                raise badFuncTypeInExpr(name, type, self.late_func_type_check[i])
-            
-            
-    def typesEq(self, l1, l2):
-        if len(l1) != len(l2):
-            return False
-        for i in range(len(l1)):
-            if type(l1[i]) == int or type(l2[i]) == int:
-                continue
-            if l1[i] != l2[i]:
-                return False
-        return True
         
     
     # Enter a parse tree produced by vypaParser#program.
@@ -80,8 +46,6 @@ class customListener(vypaListener):
 
     # Exit a parse tree produced by vypaParser#program.
     def exitProgram(self, ctx:vypaParser.ProgramContext):
-        self.checkLateFuncTypes()
-        self.checkLateFuncReturnType()
         self.func_table.dumpAll()
         #self.code_table.translate() 
 
@@ -106,11 +70,13 @@ class customListener(vypaListener):
 
     # Enter a parse tree produced by vypaParser#function_definition.
     def enterFunction_definition(self, ctx:vypaParser.Function_definitionContext):
-        name = ctx.ID().getText()
+        """name = ctx.ID().getText()
         if name in ["print", "readInt", "readString", "length", "subStr"]:
             raise embeddedRedeclared(name)
         type = ctx.type_().getText()
         self.func_table.addFunc(name, type)
+        self.act_func = name"""
+        name = ctx.ID().getText()
         self.act_func = name
 
         self.code_table.addFunctionDefinitionCode(name)
@@ -140,7 +106,7 @@ class customListener(vypaListener):
 
     # Enter a parse tree produced by vypaParser#param_list.
     def enterParam_list(self, ctx:vypaParser.Param_listContext):
-        ids = []
+        """ids = []
         types = []
         params = []
         
@@ -151,7 +117,8 @@ class customListener(vypaListener):
         for i in range(len(ids)):
             params.append({"id": ids[i], "type": types[i]})
         
-        self.func_table.addFuncParams(self.act_func, params)
+        self.func_table.addFuncParams(self.act_func, params)"""
+        pass
  
 
     # Exit a parse tree produced by vypaParser#param_list.
@@ -271,15 +238,7 @@ class customListener(vypaListener):
         call_params = self.expr_check[-1].returnType()
         if name in ["print", "readInt", "readString", "length", "subStr"]:
             return
-        if (self.func_table.getFuncID(name, excpt=False) == -1):
-            if name in self.late_func_call_check:
-                #if self.late_func_call_check[name] != call_params:
-                if not self.typesEq(self.late_func_call_check[name], call_params):
-                    raise differentFuncCalls(name)
-            else:
-                self.late_func_call_check[name] = call_params
-        else:
-            self.checkFuncTypes(name, call_params)
+        self.checkFuncTypes(name, call_params)
 
 
     # Enter a parse tree produced by vypaParser#stmt_method_call.
@@ -388,9 +347,7 @@ class customListener(vypaListener):
             
         elif ctx.ADD():
             o1 = self.expr_check[-1].stack[-1]
-            tmp_var_var_type = self.expr_check[-1].addOp("+")
-            if tmp_var_var_type != None:
-                self.late_func_type_check[tmp_var_var_type[0]] = tmp_var_var_type[1]
+            self.expr_check[-1].addOp("+")
 
             if o1 == "string":
                 #konkatenacióne string function , ja vohl!
@@ -476,23 +433,11 @@ class customListener(vypaListener):
     def exitExpr_func_call(self, ctx:vypaParser.Expr_func_callContext):
         name = ctx.ID().getText()
         call_params = self.expr_check[-1].returnType()
-        if (self.func_table.getFuncID(name, excpt=False) == -1):
-            if name in self.late_func_call_check:
-                #if self.late_func_call_check[name] != call_params:
-                if not self.typesEq(self.late_func_call_check[name], call_params):
-                    raise differentFuncCalls(name)
-            else:
-                self.late_func_call_check[name] = call_params
-                self.expr_check.pop()
-                self.late_func_type_check_fn[self.ret_func_types_cntr] = name
-                self.expr_check[-1].addType(self.ret_func_types_cntr)
-                self.ret_func_types_cntr += 1
-                
-        else:
-            self.checkFuncTypes(name, call_params)
-            self.expr_check.pop()
-            type = self.func_table.getFuncType(ctx.ID().getText())
-            self.expr_check[-1].addType(type)
+  
+        self.checkFuncTypes(name, call_params)
+        self.expr_check.pop()
+        type = self.func_table.getFuncType(name)
+        self.expr_check[-1].addType(type)
        
 
     # Enter a parse tree produced by vypaParser#casting.
@@ -502,3 +447,54 @@ class customListener(vypaListener):
     # Exit a parse tree produced by vypaParser#casting.
     def exitCasting(self, ctx:vypaParser.CastingContext):
         pass
+    
+    
+    
+    
+# For late functions definitions
+class customPreListener(vypaListener):
+    # init
+    def __init__(self, func_table):
+        self.func_table = func_table
+        self.act_func = None
+        
+
+    # Enter a parse tree produced by vypaParser#function_definition.
+    def enterFunction_definition(self, ctx:vypaParser.Function_definitionContext):
+        name = ctx.ID().getText()
+        if name in ["print", "readInt", "readString", "length", "subStr"]:
+            raise embeddedRedeclared(name)
+        type = ctx.type_().getText()
+        self.func_table.addFunc(name, type)
+        self.act_func = name
+
+
+
+    # Exit a parse tree produced by vypaParser#function_definition.
+    def exitFunction_definition(self, ctx:vypaParser.Function_definitionContext):
+        self.act_func = None
+        
+
+
+    # Enter a parse tree produced by vypaParser#param_list.
+    def enterParam_list(self, ctx:vypaParser.Param_listContext):
+        ids = []
+        types = []
+        params = []
+        
+        for i in ctx.ID():
+            ids.append(i.getText())
+        for d in ctx.data_type():
+            types.append(d.getText())
+        for i in range(len(ids)):
+            params.append({"id": ids[i], "type": types[i]})
+        
+        self.func_table.addFuncParams(self.act_func, params)
+ 
+
+    # Exit a parse tree produced by vypaParser#param_list.
+    def exitParam_list(self, ctx:vypaParser.Param_listContext):
+        pass
+
+
+   

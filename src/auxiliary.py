@@ -61,18 +61,6 @@ class exprChecker():
                 self.stack.append("int")
             elif (o1 == "string" and o2 == "string"):
                 self.stack.append("string")
-            elif (type(o1) == int and o2 == "int"):
-                self.stack.append("int")
-                return (o1, "int")
-            elif (o1 == "int" and type(o2) == int):
-                self.stack.append("int")
-                return (o2, "int")
-            elif (type(o1) == int and o2 == "string"):
-                self.stack.append("string")
-                return (o1, "string")
-            elif (o1 == "string" and type(o2) == int):
-                self.stack.append("string")
-                return (o2, "string")
             else:
                 raise typeError(op, o1, o2)
                 
