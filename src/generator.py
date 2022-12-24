@@ -64,7 +64,7 @@ class Generator:
         self.target_code += "SET {}, $5\n\n".format(var)
 
     def generateSetVar(self, position1, position2):
-        self.target_code += "SET [$FP + {}], [$FP + {}]\n".format(position1, position2)
+        self.target_code += "SET {}, {}\n".format(position1, position2)
 
     def generateBinaryIntOp(self, op, o1, o2, o3):
         self.target_code += "{} {}, {}, {}\n".format(op, o1, o2, o3)

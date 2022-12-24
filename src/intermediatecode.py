@@ -159,21 +159,30 @@ class interCode:
     def addReturnCode(self, o1="int_0"):
         self.addCode("SET", "$1", o1)
 
+    def addPrintInt(self, o1):
+        o1_pos = self.getAddress(o1)
+        self.addCode("WRITEI", o1_pos)
+
+    def addPrintString(self, o1):
+        o1_pos = self.getAddress(o1)
+        self.addCode("WRITES", o1_pos)
 
 
-    def getAddressPos(self, id):
+    def getAddress(self, id):
         ''' 
         Adresa bude ulozena ako cislo v stacku, cez globalny base pointer sa k nej dostanem
         napr ulozena hodnota v 5
         tak sa k nej dostaneme ako [$BP + 5]
         '''
-        return self.address_dict[id]
+        if self.address_dict[id] >= 0:
+            return "[$FP + " + str(abs(self.address_dict[id])) + "]"
+        else:
+            return "[$FP - " + str(abs(self.address_dict[id])) + "]"
 
 
-    def setAddressPos(self, id, stack_pointer):
-        self.address_dict[id] = stack_pointer
-
-        
+    def setAddressPos(self, id, position):
+        self.address_dict[id] = position
+  
 
     def translate(self):
         '''
@@ -200,15 +209,13 @@ class interCode:
 
             if row["op"] == "SET":
                 if row["o1"][0] == "v":
-                    o1_pos = self.getAddressPos(row["o1"][2:])
-                    row["o1"] = "[$FP + {}]".format(o1_pos)
-                
+                    row["o1"] = self.getAddress(row["o1"][2:])
                 if row["o2"][0] == "s":
                     generator.generateSetString(row["o1"], row["o2"][2:])
                 elif row["o2"][0] == "i":
                     generator.generateSetInt(row["o1"], row["o2"][2:])
                 elif row["o2"][0] == "v":
-                    o2_pos = self.getAddressPos(row["o2"][2:])
+                    o2_pos = self.getAddress(row["o2"][2:])
                     generator.generateSetVar(row["o1"], o2_pos)
                 # Register etc.
                 else:
@@ -230,8 +237,8 @@ class interCode:
                 if row["o1"][0] == "i":
                     generator.generatePushInt(row["o1"][2:])
                 elif row["o1"][0] == "v":
-                    o1_pos = self.getAddressPos(row["o1"][2:])
-                    generator.generatePushInt("[$FP + " + str(o1_pos) + "]") 
+                    o1_pos = self.getAddress(row["o1"][2:])
+                    generator.generatePushInt(o1_pos) 
                 else:
                     generator.generatePushInt(row["o1"]) 
                 self.stack_pointer += 1
@@ -239,24 +246,26 @@ class interCode:
             # PUSHS s_abcbd
             # PUSHS v_3
             # PUSHS $5
+            # TODO: string operations
             if row["op"] == "PUSHS":
                 generator.generatePushStr(row["o1"])
+                self.stack_pointer += 1
 
             # POP [FP + 5]
             # POP $5
             if row["op"] == "POP":
                 if row["o1"][0] == "v":
-                    o1_pos = self.getAddressPos(row["o1"][2:])
-                    row["o1"] = "[$FP + {}]".format(o1_pos)
+                    row["o1"] = self.getAddress(row["o1"][2:])
                 generator.generatePop(row["o1"])
                 self.stack_pointer -= 1
 
             # LABEL func
-            if row["op"] == "LABEL" or row["op"] == "JUMP" or row["op"] == "RETURN":
+            if (row["op"] == "LABEL"  or row["op"] == "JUMP" or row["op"] == "RETURN" or
+                row["op"] == "WRITEI" or row["op"] == "WRITES"):
                 generator.generateUnaryOperation(row["op"], row["o1"])
 
             # JUMPNZ func, $1
-            if row["op"] == "JUMPNZ":
+            if row["op"] == "JUMPNZ" or row["op"] == "CALL":
                 generator.generateBinaryOperation(row["op"], row["o1"], row["o2"])
                 
 

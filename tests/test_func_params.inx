@@ -1,0 +1,11 @@
+//Function test
+
+int func(int a) 
+{
+    return 5 + a;
+}
+
+int main(void)
+{
+    func(10);
+}
