@@ -215,6 +215,15 @@ class vypaListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by vypaParser#expr_func_call.
+    def enterExpr_func_call(self, ctx:vypaParser.Expr_func_callContext):
+        pass
+
+    # Exit a parse tree produced by vypaParser#expr_func_call.
+    def exitExpr_func_call(self, ctx:vypaParser.Expr_func_callContext):
+        pass
+
+
     # Enter a parse tree produced by vypaParser#casting.
     def enterCasting(self, ctx:vypaParser.CastingContext):
         pass

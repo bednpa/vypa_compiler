@@ -92,7 +92,7 @@ stmt_return: RETURN (expression)? SEMICOLON
 
 expression: LEFT_PARANTHESES_SMOOTH expression RIGHT_PARANTHESES_SMOOTH
           | NEW ID
-          | (casting | stmt_func_call)
+          | (casting | expr_func_call)
           | (stmt_method_call | (THIS | SUPER | ID) DOT ID)
           | NOT expression
           | expression (MULT | DIV) expression
@@ -104,6 +104,9 @@ expression: LEFT_PARANTHESES_SMOOTH expression RIGHT_PARANTHESES_SMOOTH
           | expression OR expression
           | (INT_VAL | STRING_VAL | ID)
           ;
+
+expr_func_call: ID LEFT_PARANTHESES_SMOOTH (expression (COMMA expression)*)? RIGHT_PARANTHESES_SMOOTH
+              ;
 
 casting: LEFT_PARANTHESES_SMOOTH data_type RIGHT_PARANTHESES_SMOOTH expression
        ;

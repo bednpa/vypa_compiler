@@ -7,15 +7,17 @@ from from_antlr.vypaParser import vypaParser
 from auxiliary import *
 
 
-
 class customListener(vypaListener):
     # init
     def __init__(self, func_table, funcs_to_be_defined, code_table):
         self.func_table = func_table
         self.late_func_call_check = {}
+        self.late_func_type_check = {}
+        self.late_func_type_check_fn = {}
         self.code_table = code_table
-        self.expr_check = exprChecker()
+        self.expr_check = [exprChecker()]
         self.act_func = None
+        self.ret_func_types_cntr = 0
 
         self.label_counter = 0
         
@@ -40,11 +42,36 @@ class customListener(vypaListener):
             for i in range(len(call_params)):
                 if call_params[i] != defined_params[i]["type"]:
                     raise badParamsFuncCall(name, call_params)
+    
+            #dp = []
+            #for d in defined_params:
+            #    dp.append(d["type"])
+            #if not self.typesEq(call_params, dp):
+            #    raise badParamsFuncCall(name, call_params)
                 
                 
     def checkLateFuncTypes(self):
         for key, val in self.late_func_call_check.items():
             self.checkFuncTypes(key, val)
+            
+            
+    def checkLateFuncReturnType(self):
+        for i in range(self.ret_func_types_cntr):
+            name = self.late_func_type_check_fn[i]
+            type = self.func_table.getFuncType(name)
+            if (self.late_func_type_check[i] != type):
+                raise badFuncTypeInExpr(name, type, self.late_func_type_check[i])
+            
+            
+    def typesEq(self, l1, l2):
+        if len(l1) != len(l2):
+            return False
+        for i in range(len(l1)):
+            if type(l1[i]) == int or type(l2[i]) == int:
+                continue
+            if l1[i] != l2[i]:
+                return False
+        return True
         
     
     # Enter a parse tree produced by vypaParser#program.
@@ -54,9 +81,9 @@ class customListener(vypaListener):
     # Exit a parse tree produced by vypaParser#program.
     def exitProgram(self, ctx:vypaParser.ProgramContext):
         self.checkLateFuncTypes()
+        self.checkLateFuncReturnType()
         self.func_table.dumpAll()
-        self.code_table.translate() 
-        pass
+        #self.code_table.translate() 
 
 
     # Enter a parse tree produced by vypaParser#class_definition.
@@ -81,7 +108,7 @@ class customListener(vypaListener):
     def enterFunction_definition(self, ctx:vypaParser.Function_definitionContext):
         name = ctx.ID().getText()
         if name in ["print", "readInt", "readString", "length", "subStr"]:
-            raise embeddedRedeclared()
+            raise embeddedRedeclared(name)
         type = ctx.type_().getText()
         self.func_table.addFunc(name, type)
         self.act_func = name
@@ -199,7 +226,7 @@ class customListener(vypaListener):
 
     # Exit a parse tree produced by vypaParser#stmt_assignment.
     def exitStmt_assignment(self, ctx:vypaParser.Stmt_assignmentContext):
-        type = self.expr_check.returnType()
+        type = self.expr_check[-1].returnType()
         st = self.func_table.getFuncST(self.act_func)
         if (st.getSymbolType(ctx.ID().getText()) != type):
             raise typeError("=", st.getSymbolType(ctx.ID().getText()), type)
@@ -225,7 +252,7 @@ class customListener(vypaListener):
 
     # Exit a parse tree produced by vypaParser#while_header.
     def exitWhile_header(self, ctx:vypaParser.While_headerContext):
-        type = self.expr_check.returnType()
+        type = self.expr_check[-1].returnType()
         if (type == "string"):
             raise ifHeaderError(type)
         self.code_table.addCode("POP", "$1")
@@ -241,10 +268,13 @@ class customListener(vypaListener):
     # Exit a parse tree produced by vypaParser#stmt_func_call.
     def exitStmt_func_call(self, ctx:vypaParser.Stmt_func_callContext):
         name = ctx.ID().getText()
-        call_params = self.expr_check.returnType()
+        call_params = self.expr_check[-1].returnType()
+        if name in ["print", "readInt", "readString", "length", "subStr"]:
+            return
         if (self.func_table.getFuncID(name, excpt=False) == -1):
             if name in self.late_func_call_check:
-                if self.late_func_call_check[name] != call_params:
+                #if self.late_func_call_check[name] != call_params:
+                if not self.typesEq(self.late_func_call_check[name], call_params):
                     raise differentFuncCalls(name)
             else:
                 self.late_func_call_check[name] = call_params
@@ -294,7 +324,7 @@ class customListener(vypaListener):
 
     # Exit a parse tree produced by vypaParser#if_header.
     def exitIf_header(self, ctx:vypaParser.If_headerContext):
-        type = self.expr_check.returnType()
+        type = self.expr_check[-1].returnType()
         if (type == "string"):
             raise ifHeaderError(type)
 
@@ -309,7 +339,7 @@ class customListener(vypaListener):
 
     # Exit a parse tree produced by vypaParser#stmt_return.
     def exitStmt_return(self, ctx:vypaParser.Stmt_returnContext):
-        type = self.expr_check.returnType()
+        type = self.expr_check[-1].returnType()
         func_type = self.func_table.getFuncType(self.act_func)
         if not (type == func_type or (type == None and func_type == "void")):
             raise returnError(self.act_func, func_type, type)
@@ -325,11 +355,10 @@ class customListener(vypaListener):
 
     # Exit a parse tree produced by vypaParser#expression.
     def exitExpression(self, ctx:vypaParser.ExpressionContext):
-        
-        if ctx.ID(): # TODO add function calls
+        if ctx.ID():
             st = self.func_table.getFuncST(self.act_func)
             type = st.getSymbolType(ctx.getText())
-            self.expr_check.addType(type)
+            self.expr_check[-1].addType(type)
             
             id = st.getSymbolID(ctx.getText())
             if (type == "string"):
@@ -338,43 +367,45 @@ class customListener(vypaListener):
                 self.code_table.addCode("PUSHI", "v_" + str(id))
             
         elif ctx.INT_VAL():
-            self.expr_check.addType("int")
+            self.expr_check[-1].addType("int")
             self.code_table.addCode("PUSHI", "i_" + ctx.getText())
             
         elif ctx.STRING_VAL():
-            self.expr_check.addType("string")
+            self.expr_check[-1].addType("string")
             self.code_table.addCode("PUSHS", "s_" + ctx.getText())
             
         elif ctx.NOT():
-            self.expr_check.addOp("!")
+            self.expr_check[-1].addOp("!")
             self.code_table.addSingleOperationCode("NOT")
         
         elif ctx.MULT():
-            self.expr_check.addOp("*")
+            self.expr_check[-1].addOp("*")
             self.code_table.addBinaryOperationCode("MULI")
             
         elif ctx.DIV():
-            self.expr_check.addOp("/")
+            self.expr_check[-1].addOp("/")
             self.code_table.addBinaryOperationCode("DIVI")
             
         elif ctx.ADD():
-            o1 = self.expr_check.stack[-1]
-            self.expr_check.addOp("+")
+            o1 = self.expr_check[-1].stack[-1]
+            tmp_var_var_type = self.expr_check[-1].addOp("+")
+            if tmp_var_var_type != None:
+                self.late_func_type_check[tmp_var_var_type[0]] = tmp_var_var_type[1]
 
             if o1 == "string":
-                #konkatenacióne string function
+                #konkatenacióne string function , ja vohl!
                 pass
             elif o1 == "int":
                 self.code_table.addBinaryOperationCode("ADDI")
 
             
         elif ctx.MINUS():
-            self.expr_check.addOp("-")
+            self.expr_check[-1].addOp("-")
             self.code_table.addBinaryOperationCode("SUBI")
             
         elif ctx.LESS():
-            o1 = self.expr_check.stack[-1]
-            self.expr_check.addOp("<")
+            o1 = self.expr_check[-1].stack[-1]
+            self.expr_check[-1].addOp("<")
             if o1 == "string":
                 self.code_table.addBinaryOperationCode("LTS")
             elif o1 == "int":
@@ -382,55 +413,86 @@ class customListener(vypaListener):
 
             
         elif ctx.LOE():
-            o1 = self.expr_check.stack[-1]
-            self.expr_check.addOp("<=")
+            o1 = self.expr_check[-1].stack[-1]
+            self.expr_check[-1].addOp("<=")
             if o1 == "string":
                 self.code_table.addBinaryExtendCodeString("LTS", "EQS", "OR")
             elif o1 == "int":
                 self.code_table.addBinaryExtendCode("LTI", "EQI", "OR")
             
         elif ctx.GREATER():
-            o1 = self.expr_check.stack[-1]
-            self.expr_check.addOp(">")
+            o1 = self.expr_check[-1].stack[-1]
+            self.expr_check[-1].addOp(">")
             if o1 == "string":
                 self.code_table.addBinaryOperationCodeString("GTS")
             elif o1 == "int":
                 self.code_table.addBinaryOperationCode("GTI")
             
         elif ctx.GOE():
-            o1 = self.expr_check.stack[-1]
-            self.expr_check.addOp(">=")
+            o1 = self.expr_check[-1].stack[-1]
+            self.expr_check[-1].addOp(">=")
             if o1 == "string":
                 self.code_table.addBinaryExtendCode("GTS", "EQS", "OR")
             elif o1 == "int":
                 self.code_table.addBinaryExtendCode("GTI", "EQI", "OR")
             
         elif ctx.EQ():
-            o1 = self.expr_check.stack[-1]
-            self.expr_check.addOp("==")
+            o1 = self.expr_check[-1].stack[-1]
+            self.expr_check[-1].addOp("==")
             if o1 == "string":
                 self.code_table.addBinaryOperationCode("EQS")
             elif o1 == "int":
                 self.code_table.addBinaryOperationCode("EQI")
             
         elif ctx.NEQ():
-            o1 = self.expr_check.stack[-1]
-            self.expr_check.addOp("!=")
+            o1 = self.expr_check[-1].stack[-1]
+            self.expr_check[-1].addOp("!=")
             if o1 == "string":
                 self.code_table.addNEQOperationString()
             elif o1 == "int":
                 self.code_table.addNEQOperation()
             
         elif ctx.AND():
-            self.expr_check.addOp("&&")
+            self.expr_check[-1].addOp("&&")
             self.code_table.addBinaryOperationCode("AND")
             
         elif ctx.OR():
-            self.expr_check.addOp("||")
-            self.code_table.addBinaryOperationCode("OR")       
+            self.expr_check[-1].addOp("||")
+            self.code_table.addBinaryOperationCode("OR") 
+            
+        elif ctx.expr_func_call():
+            pass    
             
         else:
-            raise unexpectedError() # not sure about this
+            raise unexpectedError() # expression, not sure about this TODO
+        
+        
+    # Enter a parse tree produced by vypaParser#expr_func_call.
+    def enterExpr_func_call(self, ctx:vypaParser.Expr_func_callContext):
+        self.expr_check.append(exprChecker())
+        
+
+    # Exit a parse tree produced by vypaParser#expr_func_call.
+    def exitExpr_func_call(self, ctx:vypaParser.Expr_func_callContext):
+        name = ctx.ID().getText()
+        call_params = self.expr_check[-1].returnType()
+        if (self.func_table.getFuncID(name, excpt=False) == -1):
+            if name in self.late_func_call_check:
+                #if self.late_func_call_check[name] != call_params:
+                if not self.typesEq(self.late_func_call_check[name], call_params):
+                    raise differentFuncCalls(name)
+            else:
+                self.late_func_call_check[name] = call_params
+                self.expr_check.pop()
+                self.late_func_type_check_fn[self.ret_func_types_cntr] = name
+                self.expr_check[-1].addType(self.ret_func_types_cntr)
+                self.ret_func_types_cntr += 1
+                
+        else:
+            self.checkFuncTypes(name, call_params)
+            self.expr_check.pop()
+            type = self.func_table.getFuncType(ctx.ID().getText())
+            self.expr_check[-1].addType(type)
        
 
     # Enter a parse tree produced by vypaParser#casting.

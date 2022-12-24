@@ -33,7 +33,7 @@ class exprChecker():
             if (o1 == "int"):
                 self.stack.append("int")
             else:
-                typeError(op, None, o2)
+                raise typeError(op, None, o2)
                 
         # mul
         elif (op == "*"):
@@ -42,7 +42,7 @@ class exprChecker():
             if (o1 == "int" and o2 == "int"):
                 self.stack.append("int")
             else:
-                typeError(op, o1, o2)
+                raise typeError(op, o1, o2)
                 
         # div
         elif (op == "/"):
@@ -51,7 +51,7 @@ class exprChecker():
             if (o1 == "int" and o2 == "int"):
                 self.stack.append("int")
             else:
-                typeError(op, o1, o2)
+                raise typeError(op, o1, o2)
                 
         # add
         elif (op == "+"):
@@ -61,8 +61,20 @@ class exprChecker():
                 self.stack.append("int")
             elif (o1 == "string" and o2 == "string"):
                 self.stack.append("string")
+            elif (type(o1) == int and o2 == "int"):
+                self.stack.append("int")
+                return (o1, "int")
+            elif (o1 == "int" and type(o2) == int):
+                self.stack.append("int")
+                return (o2, "int")
+            elif (type(o1) == int and o2 == "string"):
+                self.stack.append("string")
+                return (o1, "string")
+            elif (o1 == "string" and type(o2) == int):
+                self.stack.append("string")
+                return (o2, "string")
             else:
-                typeError(op, o1, o2)
+                raise typeError(op, o1, o2)
                 
         # minus
         elif (op == "-"):
@@ -71,7 +83,7 @@ class exprChecker():
             if (o1 == "int" and o2 == "int"):
                 self.stack.append("int")
             else:
-                typeError(op, o1, o2)
+                raise typeError(op, o1, o2)
                 
         # less
         elif (op == "<"):
@@ -82,7 +94,7 @@ class exprChecker():
             elif (o1 == "string" and o2 == "string"):
                 self.stack.append("int")
             else:
-                typeError(op, o1, o2)
+                raise typeError(op, o1, o2)
                 
         # less or equal
         elif (op == "<="):
@@ -93,7 +105,7 @@ class exprChecker():
             elif (o1 == "string" and o2 == "string"):
                 self.stack.append("int")
             else:
-                typeError(op, o1, o2)
+                raise typeError(op, o1, o2)
                 
         # greater
         elif (op == ">"):
@@ -104,7 +116,7 @@ class exprChecker():
             elif (o1 == "string" and o2 == "string"):
                 self.stack.append("int")
             else:
-                typeError(op, o1, o2)
+                raise typeError(op, o1, o2)
                 
         # greater or equal
         elif (op == ">="):
@@ -115,7 +127,7 @@ class exprChecker():
             elif (o1 == "string" and o2 == "string"):
                 self.stack.append("int")
             else:
-                typeError(op, o1, o2)
+                raise typeError(op, o1, o2)
                 
         # equal
         elif (op == "=="):
@@ -124,7 +136,7 @@ class exprChecker():
             if (o1 == o2):
                 self.stack.append("int")
             else:
-                typeError(op, o1, o2)
+                raise typeError(op, o1, o2)
                 
         # not equal
         elif (op == "!="):
@@ -133,7 +145,7 @@ class exprChecker():
             if (o1 == o2):
                 self.stack.append("int")
             else:
-                typeError(op, o1, o2)
+                raise typeError(op, o1, o2)
                 
         # and
         elif (op == "&&"):
@@ -142,7 +154,7 @@ class exprChecker():
             if (o1 == o2 and o1 != "string"):
                 self.stack.append("int")
             else:
-                typeError(op, o1, o2)
+                raise typeError(op, o1, o2)
                 
         # or
         elif (op == "||"):
@@ -151,7 +163,7 @@ class exprChecker():
             if (o1 == o2 and o1 != "string"):
                 self.stack.append("int")
             else:
-                typeError(op, o1, o2)
+                raise typeError(op, o1, o2)
                 
         else:
             raise unexpectedError()
@@ -250,7 +262,7 @@ class badParamsFuncCall(customException):
         else:
             self.what = "Can not call function " + str(name) + " with parameter of type"
         for p in params:
-            self.what += " " + p 
+            self.what += " " + str(p) 
         self.what += "."
         self.err_code = 8
         
@@ -274,3 +286,11 @@ class differentFuncCalls(customException):
     def __init__(self, name):
         self.what = "Function " + str(name) + " is called two times with different types or number of parameters."
         self.err_code = 10
+        
+        
+# Class of  error.
+#      
+class badFuncTypeInExpr(customException):
+    def __init__(self, name, real_type, expected_type):
+        self.what = "Type " + str(real_type) + " of function " + str(name) + " do not match expected type " + str(expected_type) + " in expression."
+        self.err_code = 11
