@@ -1,0 +1,9 @@
+//ReadInt function test
+
+void main(void)
+{
+    int x;
+    x = readInt();
+
+    print(x);
+}

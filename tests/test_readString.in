@@ -1,0 +1,9 @@
+//ReadString function test
+
+void main(void)
+{
+    string a;
+    a = readString();
+
+    print(a);
+}

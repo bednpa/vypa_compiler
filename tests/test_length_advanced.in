@@ -1,0 +1,13 @@
+//Length function test
+
+void main(void)
+{
+    string a;
+    a = "abcdef" + "xxxxx" + "dddd";
+    
+    int x;
+
+    x = length(a + "abbbbbb");
+
+    print(x);
+}

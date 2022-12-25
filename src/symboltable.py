@@ -97,7 +97,7 @@ class funcTable():
         if (params != None):
             for p in params:
                 st.addSymbol(p["id"], p["type"])
-        self.ft[self.id] = { "name": name, "type": type, "params": params, "symbol_table": st } 
+        self.ft[self.id] = { "name": name, "type": type, "params": params, "variable_table": st } 
         self.id += 1 
         
         
@@ -110,11 +110,11 @@ class funcTable():
             if val["params"] == None and val["name"] == name:
                 name = self.ft[key]["name"]
                 type = self.ft[key]["type"]
-                st = self.ft[key]["symbol_table"]
+                st = self.ft[key]["variable_table"]
                 if (params != None):
                     for p in params:
                         st.addSymbol(p["id"], p["type"])
-                self.ft[key].update({ "name": name, "type": type, "params": params, "symbol_table": st })
+                self.ft[key].update({ "name": name, "type": type, "params": params, "variable_table": st })
                 was_declared = True
         if not was_declared:
             raise notDeclared(name)
@@ -159,7 +159,7 @@ class funcTable():
     def getFuncST(self, name):
         for key, val in self.ft.items(): 
             if val["name"] == name:
-                return self.ft[key]["symbol_table"]
+                return self.ft[key]["variable_table"]
         raise notDeclared(name)
     
     
@@ -169,7 +169,7 @@ class funcTable():
     def getUniqueID(self, func_name, var_name):
         for k1, v1 in self.ft.items(): 
             if v1["name"] == func_name:
-                st = self.ft[k1]["symbol_table"]
+                st = self.ft[k1]["variable_table"]
                 for k2, v2 in st.st.items(): 
                     if v2["name"] == var_name:
                         return str(k1) + "_" + str(k2)
@@ -183,7 +183,7 @@ class funcTable():
     def increaseNamespace(self, name):
         for key, val in self.ft.items(): 
             if val["name"] == name:
-                st = self.ft[key]["symbol_table"]
+                st = self.ft[key]["variable_table"]
                 st.namespace += 1
                 return
         raise unexpectedError()
@@ -195,7 +195,7 @@ class funcTable():
     def decreaseNamespace(self, name):
         for key, val in self.ft.items(): 
             if val["name"] == name:
-                st = self.ft[key]["symbol_table"]
+                st = self.ft[key]["variable_table"]
                 st.st = {key:val for key, val in st.st.items() if val["namespace"] < st.namespace}
                 st.namespace -= 1
                 return
@@ -226,7 +226,7 @@ class funcTable():
                 ft_to_print.append([k, self.ft[k]["name"], self.ft[k]["type"], None])
             else:
                 ft_to_print.append([k, self.ft[k]["name"], self.ft[k]["type"], [ (v["type"], v["id"]) for v in self.ft[k]["params"]]])
-            self.ft[k]["symbol_table"].dump()
+            self.ft[k]["variable_table"].dump()
             print("")
         print("Functions table:")
         print(tabulate(ft_to_print, headers=["ID", "Name", "Type", "Params"], tablefmt='orgtbl'))

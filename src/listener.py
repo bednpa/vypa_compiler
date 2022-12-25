@@ -450,11 +450,6 @@ class customListener(vypaListener):
     def exitExpr_func_call(self, ctx:vypaParser.Expr_func_callContext):
         name = ctx.ID().getText()
         call_params = self.expr_check[-1].returnType()
-  
-        self.checkFuncTypes(name, call_params)
-        self.expr_check.pop()
-        type = self.func_table.getFuncType(name)
-        self.expr_check[-1].addType(type)
 
         if name in ["print", "readInt", "readString", "length", "subStr"]:
             if name == "print":
@@ -470,21 +465,33 @@ class customListener(vypaListener):
                     self.code_table.addCode("POP", "$6")
 
             if name == "readInt" or name == "length":
+                self.expr_check.pop()
+                self.expr_check[-1].addType("int")
+
                 self.code_table.addCode("PUSHI", "i_0")
                 self.code_table.addCode("CALL", "[$SP]", name)
                 self.code_table.addCode("PUSHI", "$1")
 
             if name == "readString":
+                self.expr_check.pop()
+                self.expr_check[-1].addType("string")
+
                 self.code_table.addCode("PUSHI", "i_0")
                 self.code_table.addCode("CALL", "[$SP]", name)
                 self.code_table.addCode("PUSHS", "$1")
             return
-        
+
+        self.checkFuncTypes(name, call_params)
+        self.expr_check.pop()
+        type = self.func_table.getFuncType(name)
+        self.expr_check[-1].addType(type)
+
         defined_params = self.func_table.getFuncParams(name)
         self.code_table.addCode("CALL", "[$SP]", name)
         for i in range(len(defined_params)):
             self.code_table.addCode("POP", "$6")
         self.code_table.addCode("PUSHI", "$1")
+
 
 
        
