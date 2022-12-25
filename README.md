@@ -11,6 +11,7 @@ Nevypisovat nic navic na stdout, chyby vypsat na stderr
 Pridat podporu merlina
 Pridat promenou na tisk ST
 Osetrit prave jeden main
+if header i pro while
 
 ## Checking
 
