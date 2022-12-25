@@ -10,7 +10,6 @@ class interCode:
     def __init__(self):
         self.code = []
         self.address_dict = {}
-        self.frame_pointer = 0
         self.stack_pointer = 0
         
     def addCode(self, op, o1=None, o2=None, o3=None):
