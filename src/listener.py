@@ -3,7 +3,7 @@
 # Author(s): Pavel Bednar (xbedna73), Samuel Gajdos (xgajdo26)
 # Description: Custom classes for parse tree traversal.
 #
-import string # TODO je to potreba?
+import string
 from from_antlr.vypaListener import vypaListener
 from from_antlr.vypaParser import vypaParser
 from auxiliary import *

@@ -226,7 +226,7 @@ class unexpectedError(customException):
 class ifHeaderError(customException):
     def __init__(self, type):
         self.what = "Type " + str(type) + " can not be in if/while header."
-        self.err_code = 5
+        self.err_code = SEMANTIC_ERROR_TYPES
 
 
 #        
@@ -259,7 +259,7 @@ class badParamsFuncCall(customException):
         for p in params:
             self.what += " " + str(p) 
         self.what += "."
-        self.err_code = 8
+        self.err_code = SEMANTIC_ERROR_TYPES
         
         
 #
@@ -271,7 +271,7 @@ class badParamsCountFuncCall(customException):
             self.what = "Can not call function " + str(name) + " with " + str(num) + " parameters."
         else:
             self.what = "Can not call function " + str(name) + " with " + str(num) + " parameter."
-        self.err_code = 9
+        self.err_code = SEMANTIC_ERROR_TYPES
         
         
 #
@@ -280,7 +280,7 @@ class badParamsCountFuncCall(customException):
 class differentFuncCalls(customException):
     def __init__(self, name):
         self.what = "Function " + str(name) + " is called two times with different types or number of parameters."
-        self.err_code = 10
+        self.err_code = SEMANTIC_ERROR_TYPES
         
         
 # Class of  error.

@@ -196,7 +196,6 @@ class interCode:
             # PUSHS s_abcbd
             # PUSHS v_3
             # PUSHS $5
-            # TODO: string operations
             if row["op"] == "PUSHS":
                 if row["o1"][0] == "s":
                     generator.generatePushStr(row["o1"][2:])
