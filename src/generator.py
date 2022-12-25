@@ -12,7 +12,7 @@ class Generator:
                              "ALIAS FP $7\n\n"
                              "JUMP main\n\n"
                              ""
-                             # TODO: Concat, substr, Print
+                             # TODO: Concat, substr
                              # Take c code for those functions and generate code for them
                              # https://www.programmingsimplified.com/c/source-code/c-substring
                              # https://www.geeksforgeeks.org/concatenating-two-strings-in-c/
@@ -40,6 +40,28 @@ class Generator:
                              "SUBI $SP, $SP, 1\n"
                              "RETURN [$SP]\n\n"
                              ""
+                             "LABEL __concat__\n"
+                             "ADDI $SP, $SP, 1\n"
+                             "SET $FP, $SP\n"
+                             "GETSIZE $4, [$FP - 3]\n"
+                             "GETSIZE $5, [$FP - 2]\n"
+                             "COPY $6, [$FP - 3]\n"
+                             "ADDI $1, $4, $5\n"
+                             "RESIZE $6, $1\n"
+                             "SET $2, 0\n"
+                             "LABEL concat_begin\n"
+                             "LTI $1, $2, $5\n"
+                             "JUMPZ concat_end, $1\n"
+                             "GETWORD $1, [$FP - 2], $2\n"
+                             "ADDI $0, $2, $4\n"
+                             "SETWORD $6, $0, $1\n"
+                             "ADDI $2, $2, 1\n"
+                             "JUMP concat_begin\n"
+                             "LABEL concat_end\n"
+                             "SET $1, $6\n"
+                             "SET $SP, $FP\n"
+                             "SUBI $SP, $SP, 1\n"
+                             "RETURN [$SP]\n\n"
                              )
 
     def generateSetNewInt(self):
@@ -59,7 +81,7 @@ class Generator:
 
     def generateSetString(self, var, value):
         self.target_code += "CREATE $5, 1\n"
-        self.target_code += "SETWORD $5, 0, \"{}\"\n".format(value)
+        self.target_code += "SETWORD $5, 0, {}\n".format(value)
         self.target_code += "GETWORD $5, $5, 0\n"
         self.target_code += "SET {}, $5\n\n".format(var)
 
@@ -77,6 +99,11 @@ class Generator:
         self.target_code += "ADDI $SP, $SP, 1\n"
         self.target_code += "SET [$SP], {}\n\n".format(o1)
 
+    def generatePushStr(self, o1):
+        self.target_code += "#Simulate PUSH {}\n".format(o1)
+        self.target_code += "ADDI $SP, $SP, 1\n"
+        self.generateSetString("[$SP]", o1)
+
     def generatePop(self, o1):
         self.target_code += "#Simulate POP {}\n".format(o1)
         self.target_code += "SET {}, [$SP]\n".format(o1)
@@ -87,4 +114,5 @@ class Generator:
 
     def generateBinaryOperation(self, op, o1, o2):
         self.target_code += "{} {}, {}\n".format(op, o1, o2)
+
         

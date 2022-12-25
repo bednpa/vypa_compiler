@@ -1,50 +1,5 @@
 from generator import Generator
 
-'''
-Intermediate Code Cheatsheet
-
-PUSHI, o1               - Push integer constant o1 onto the stack
-PUSHS, o1               - Push string constant o1 onto the stack
-POP, o1                 - Pop value from the stack and store it into variable o1
-
-MULT, o1, o1, o2        - Multiply o1 and o2 and store the result into o1
-DIV, o1, o1, o2         - Divide o1 by o2 and store the result into o1
-ADD, o1, o1, o2         - Add o1 and o2 and store the result into o1
-SUB, o1, o1, o2         - Subtract o2 from o1 and store the result into o1
-
-SET o1, o2              - Set variable o1 to value o2
-
-JUMP, o1                - Unconditional jump to label o1
-// Expression evaluation codes:
-
-POP, o1
-POP, o2
-MULT, o1, o1, o2
-PUSH o1
-
-POP, o1
-POP, o2
-ADD, o1, o1, o2
-PUSH o1
-
-// Conditional statement codes:
-
-# Start of if, result of expr is on top of the stack
-POP $1
-JUMPNZ if:row,position, $1
-JUMP else:row,position
-LABEL if:row,position
-//if stmt
-JUMP else_end:row,position
-
-# Start of else
-LABEL else:row,position
-//else stmt
-
-# End of else part
-LABEL else_end:row,position
-
-'''
 
 class interCode:
     def __init__(self):
@@ -92,15 +47,23 @@ class interCode:
         self.addCode("NOT", "$1", "$1")
         self.addCode("PUSHI", "$1")
 
+    def addStringCatCode(self):
+        self.addCode("PUSHI", "i_0")
+        self.addCode("CALL", "[$SP]", "__concat__")
+        self.addCode("POP", "$6")
+        self.addCode("POP", "$6")
+        self.addCode("PUSHI", "$1")
+
     def addFramePointerInit(self):
         self.addCode("ADDI", "$SP", "$SP", 1)
         self.addCode("SET", "$FP", "$SP")
+        self.stack_pointer += 1
 
     def addFramePointerEnd(self):
         self.addCode("SET", "$SP", "$FP")
         self.addCode("SUBI", "$SP", "$SP", 1)
+        self.stack_pointer -= 1
 
-    # TODO: K labelom je potrebne priradit cislo riadku + stlpca znaku
     def addConditionalBeginCode(self, position):
         # expr stmt ...
         self.addCode("JUMPNZ", "if_" + str(position), "$1")
@@ -108,7 +71,6 @@ class interCode:
         self.addCode("LABEL", "if_" + str(position))
         #if stmt ...
         
-    # The position musi byt rovnaky pre ako pre najblizsi if
     def addConditionalElseCode(self, position):
         # if stmt ...
         self.addCode("JUMP", "else_end_" + str(position))
@@ -142,13 +104,11 @@ class interCode:
         self.addCode("CALL", "[$SP]", func_label)
 
     def addFunctionDefinitionCode(self, func_label):
-        # self.addCode("JUMP", "end_" + func_label)
         self.addCode("LABEL", func_label)
         self.addFramePointerInit()
 
     def addFunctionEndCode(self):
         self.addFramePointerEnd()
-        # self.addCode("LABEL", "end_" + func_label)
 
     def addVarInitCode(self, o1, o2):
         self.addCode("SETN", o1, o2)
@@ -159,21 +119,14 @@ class interCode:
     def addReturnCode(self, o1="int_0"):
         self.addCode("SET", "$1", o1)
 
-    def addPrintInt(self, o1):
-        o1_pos = self.getAddress(o1)
-        self.addCode("WRITEI", o1_pos)
+    def addPrintInt(self, position):
+        self.addCode("WRITEI", "[$SP - {}]".format(position))
 
-    def addPrintString(self, o1):
-        o1_pos = self.getAddress(o1)
-        self.addCode("WRITES", o1_pos)
+    def addPrintString(self, position):
+        self.addCode("WRITES", "[$SP - {}]".format(position))
 
 
     def getAddress(self, id):
-        ''' 
-        Adresa bude ulozena ako cislo v stacku, cez globalny base pointer sa k nej dostanem
-        napr ulozena hodnota v 5
-        tak sa k nej dostaneme ako [$BP + 5]
-        '''
         if self.address_dict[id] >= 0:
             return "[$FP + " + str(abs(self.address_dict[id])) + "]"
         else:
@@ -189,14 +142,10 @@ class interCode:
         Translate intermediate code to VypCode.
         '''
 
-        #Optimalization?
-
         #generator_init
         generator = Generator()
 
         for row in self.code:
-            #print(row["op"])
-
             # SETN [$SP] s_abc
             # SETN [$SP] i_42
             if row["op"] == "SETN":
@@ -248,7 +197,13 @@ class interCode:
             # PUSHS $5
             # TODO: string operations
             if row["op"] == "PUSHS":
-                generator.generatePushStr(row["o1"])
+                if row["o1"][0] == "s":
+                    generator.generatePushStr(row["o1"][2:])
+                elif row["o1"][0] == "v":
+                    o1_pos = self.getAddress(row["o1"][2:])
+                    generator.generatePushInt(o1_pos) 
+                else:
+                    generator.generatePushInt(row["o1"]) 
                 self.stack_pointer += 1
 
             # POP [FP + 5]

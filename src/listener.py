@@ -53,9 +53,10 @@ class customListener(vypaListener):
 
     # Exit a parse tree produced by vypaParser#program.
     def exitProgram(self, ctx:vypaParser.ProgramContext):
-        #self.func_table.dumpAll()
-        #self.code_table.translate() 
-        pass
+        # self.func_table.dumpAll()
+        
+        self.code_table.addCode("LABEL", "__program_end__")
+        self.code_table.translate() 
 
 
     # Enter a parse tree produced by vypaParser#class_definition.
@@ -78,12 +79,6 @@ class customListener(vypaListener):
 
     # Enter a parse tree produced by vypaParser#function_definition.
     def enterFunction_definition(self, ctx:vypaParser.Function_definitionContext):
-        """name = ctx.ID().getText()
-        if name in ["print", "readInt", "readString", "length", "subStr"]:
-            raise embeddedRedeclared(name)
-        type = ctx.type_().getText()
-        self.func_table.addFunc(name, type)
-        self.act_func = name"""
         name = ctx.ID().getText()
         self.act_func = name
 
@@ -92,6 +87,8 @@ class customListener(vypaListener):
 
     # Exit a parse tree produced by vypaParser#function_definition.
     def exitFunction_definition(self, ctx:vypaParser.Function_definitionContext):
+        if self.act_func == "main":
+            self.code_table.addCode("JUMP", "__program_end__")
         self.act_func = None
         
         
@@ -121,18 +118,6 @@ class customListener(vypaListener):
 
     # Enter a parse tree produced by vypaParser#param_list.
     def enterParam_list(self, ctx:vypaParser.Param_listContext):
-        """ids = []
-        types = []
-        params = []
-        
-        for i in ctx.ID():
-            ids.append(i.getText())
-        for d in ctx.data_type():
-            types.append(d.getText())
-        for i in range(len(ids)):
-            params.append({"id": ids[i], "type": types[i]})
-        
-        self.func_table.addFuncParams(self.act_func, params)"""
         pass
  
 
@@ -181,19 +166,15 @@ class customListener(vypaListener):
     # Enter a parse tree produced by vypaParser#stmt_local_vars.
     def enterStmt_local_vars(self, ctx:vypaParser.Stmt_local_varsContext):
         for name in ctx.ID():
+            st = self.func_table.getFuncST(self.act_func)
+            st.addSymbol(name.getText(), ctx.data_type().getText())
             id = self.func_table.getUniqueID(self.act_func, name.getText())
             if (ctx.data_type().getText() == "int"):
-                st = self.func_table.getFuncST(self.act_func)
-                st.addSymbol(name.getText(), ctx.data_type().getText())
-
-                self.code_table.addVarInitCode("v_" + id , "i_0")
+                self.code_table.addVarInitCode("v_" + str(id) , "i_0")
 
             elif (ctx.data_type().getText() == "string"):
-                st = self.func_table.getFuncST(self.act_func)
-                st.addSymbol(name.getText(), ctx.data_type().getText())
-
-                self.code_table.addVarInitCode("v_" + id , "s_")
-
+                self.code_table.addVarInitCode("v_" + str(id) , "s_")
+            
             else:
                 self.func_table.addSymbol(name.getText(), ctx.data_type().getText())
 
@@ -215,7 +196,7 @@ class customListener(vypaListener):
             raise typeError("=", st.getSymbolType(ctx.ID().getText()), type)
 
         self.code_table.addCode("POP", "$1")
-        id = st.getSymbolID(ctx.ID().getText())
+        id = self.func_table.getUniqueID(self.act_func, ctx.ID().getText())
         self.code_table.addVarAssignCode("v_" + str(id), "$1")
 
 
@@ -253,26 +234,37 @@ class customListener(vypaListener):
         name = ctx.ID().getText()
         call_params = self.expr_check[-1].returnType()
         if name in ["print", "readInt", "readString", "length", "subStr"]:
+            if name == "print":
+                if type(call_params) != list:
+                    call_params = [call_params]
+                length = len(call_params)
+                for i in range(length):
+                    if call_params[i] == "int":
+                        self.code_table.addPrintInt(length - i - 1)
+                    elif call_params[i] == "string":
+                        self.code_table.addPrintString(length - i - 1)
+                for i in range(length):
+                    self.code_table.addCode("POP", "$6")
+
+            if name == "readInt" or name == "length":
+                self.code_table.addCode("PUSHI", "i_0")
+                self.code_table.addCode("CALL", "[$SP]", name)
+                self.code_table.addCode("PUSHI", "$1")
+
+            if name == "readString":
+                self.code_table.addCode("PUSHI", "i_0")
+                self.code_table.addCode("CALL", "[$SP]", name)
+                self.code_table.addCode("PUSHS", "$1")
             return
+            
         self.checkFuncTypes(name, call_params)
-
+        
         defined_params = self.func_table.getFuncParams(name)
-        print(defined_params)
-        if name == "printi":
-            self.code_table.addFramePointerInit()
-            for i in range(len(defined_params)):
-                unique_id = self.func_table.getUniqueID("printi", defined_params[i]["id"])
-                if defined_params[i]["type"] == "int":
-                    self.code_table.addPrintInt(unique_id)
-                elif defined_params[i]["type"] == "string":
-                    self.code_table.addPrintString(unique_id)
-            self.code_table.addFramePointerEnd()
-
-        else:
-            self.code_table.addCode("CALL", "[$SP]", name)
-            for i in range(len(defined_params)):
-                self.code_table.addCode("POP", "$6")
-            self.code_table.addCode("PUSHI", "$1")
+        self.code_table.addCode("PUSHI", "i_0")
+        self.code_table.addCode("CALL", "[$SP]", name)
+        for i in range(len(defined_params)):
+            self.code_table.addCode("POP", "$6")
+        self.code_table.addCode("PUSHI", "$1")
 
 
     # Enter a parse tree produced by vypaParser#stmt_method_call.
@@ -359,7 +351,6 @@ class customListener(vypaListener):
                 self.code_table.addCode("PUSHS", "v_" + str(id))
             elif (type == "int"):
                 self.code_table.addCode("PUSHI", "v_" + str(id))
-
             
         elif ctx.INT_VAL():
             self.expr_check[-1].addType("int")
@@ -386,8 +377,7 @@ class customListener(vypaListener):
             self.expr_check[-1].addOp("+")
 
             if o1 == "string":
-                #konkatenacióne string function , ja vohl!
-                pass
+                self.code_table.addStringCatCode()
             elif o1 == "int":
                 self.code_table.addBinaryOperationCode("ADDI")
 
@@ -474,6 +464,38 @@ class customListener(vypaListener):
         self.expr_check.pop()
         type = self.func_table.getFuncType(name)
         self.expr_check[-1].addType(type)
+
+        if name in ["print", "readInt", "readString", "length", "subStr"]:
+            if name == "print":
+                if type(call_params) != list:
+                    call_params = [call_params]
+                length = len(call_params)
+                for i in range(length):
+                    if call_params[i] == "int":
+                        self.code_table.addPrintInt(length - i - 1)
+                    elif call_params[i] == "string":
+                        self.code_table.addPrintString(length - i - 1)
+                for i in range(length):
+                    self.code_table.addCode("POP", "$6")
+
+            if name == "readInt" or name == "length":
+                self.code_table.addCode("PUSHI", "i_0")
+                self.code_table.addCode("CALL", "[$SP]", name)
+                self.code_table.addCode("PUSHI", "$1")
+
+            if name == "readString":
+                self.code_table.addCode("PUSHI", "i_0")
+                self.code_table.addCode("CALL", "[$SP]", name)
+                self.code_table.addCode("PUSHS", "$1")
+            return
+        
+        defined_params = self.func_table.getFuncParams(name)
+        self.code_table.addCode("CALL", "[$SP]", name)
+        for i in range(len(defined_params)):
+            self.code_table.addCode("POP", "$6")
+        self.code_table.addCode("PUSHI", "$1")
+
+
        
 
     # Enter a parse tree produced by vypaParser#casting.
