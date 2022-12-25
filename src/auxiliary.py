@@ -225,7 +225,7 @@ class unexpectedError(customException):
 #
 class ifHeaderError(customException):
     def __init__(self, type):
-        self.what = "Type " + str(type) + " can not be in if header."
+        self.what = "Type " + str(type) + " can not be in if/while header."
         self.err_code = 5
 
 
