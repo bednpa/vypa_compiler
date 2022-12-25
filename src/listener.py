@@ -53,8 +53,9 @@ class customListener(vypaListener):
 
     # Exit a parse tree produced by vypaParser#program.
     def exitProgram(self, ctx:vypaParser.ProgramContext):
-        self.func_table.dumpAll()
+        #self.func_table.dumpAll()
         #self.code_table.translate() 
+        pass
 
 
     # Enter a parse tree produced by vypaParser#class_definition.
@@ -498,9 +499,9 @@ class customPreListener(vypaListener):
             params.append({"id": ids[i], "type": types[i]})
         
         self.func_table.addFuncParams(self.act_func, params)
- 
-
-    # Exit a parse tree produced by vypaParser#param_list.
-    def exitParam_list(self, ctx:vypaParser.Param_listContext):
-        pass
+    
+    
+    # Exit a parse tree produced by vypaParser#program.
+    def exitProgram(self, ctx:vypaParser.ProgramContext):
+        self.func_table.getFuncID("main")
    

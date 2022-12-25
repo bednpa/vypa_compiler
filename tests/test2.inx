@@ -1,8 +1,0 @@
-//String test
-
-int main(void) {
-    string x;
-    x = "abc";
-    x = "ab\"";
-    //x = "a"b";
-}

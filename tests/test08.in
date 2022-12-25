@@ -1,0 +1,14 @@
+//Bad function call with complex expressions 1
+
+int func(int x, string y) {
+    return x;
+}
+
+int main(void) {
+
+    int x;
+    string y;
+    x = func(x+1*8+y, 5);
+
+    return 0;
+}

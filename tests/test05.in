@@ -1,0 +1,13 @@
+//Function call with complex expressions 2
+
+int func(int x, string y) {
+    return x;
+}
+
+int main(void) {
+
+    int x;
+    x = func(func(func(x*5+2,"a"),"b"+"c"),"d"+"e");
+
+    return 0;
+}

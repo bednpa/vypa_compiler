@@ -1,0 +1,19 @@
+//Redefined variables but in different namespace
+
+int main(void) {
+    int x;
+    
+    if (1) {
+        int x;
+        if (1) {
+            int x;
+        }
+        else {
+            int x;
+        }
+    } else {
+        int x;
+    }
+
+    return 0;
+}

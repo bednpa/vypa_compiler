@@ -1,0 +1,6 @@
+//Call not defined function
+
+int main(void) {
+    test();
+    return 0;
+}

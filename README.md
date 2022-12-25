@@ -8,6 +8,9 @@ Zkontrolovat navratove hodnoty chyb
 Co je lex error?   
 -5 nelze asi  
 Nevypisovat nic navic na stdout, chyby vypsat na stderr
+Pridat podporu merlina
+Pridat promenou na tisk ST
+Osetrit prave jeden main
 
 ## Checking
 

@@ -1,0 +1,14 @@
+//Bad return type
+
+int main(void) {
+
+    int x;
+    string y;
+    x = func(x+1*8, y+"a");
+
+    return 0;
+}
+
+int func(int x, string y) {
+    return y;
+}

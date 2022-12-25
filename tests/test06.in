@@ -1,0 +1,13 @@
+//Bad function call 1
+
+int func(int x, string y) {
+    return x;
+}
+
+int main(void) {
+
+    int x;
+    x = func(x, x);
+
+    return 0;
+}
