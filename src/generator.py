@@ -8,7 +8,6 @@ class Generator:
 
     def __init__(self):
         self.target_code = ""
-        self.fun_target_code = ""
         self.generateHeader()
 
     def generateHeader(self):
