@@ -16,7 +16,8 @@ class customListener(vypaListener):
     
     
     # Init.
-    def __init__(self, func_table, code_table):
+    def __init__(self, func_table, code_table, file):
+        self.file = file
         self.func_table = func_table
         self.code_table = code_table
         self.expr_check = [exprChecker()]
@@ -54,7 +55,9 @@ class customListener(vypaListener):
     # Exit a parse tree produced by vypaParser#program.
     def exitProgram(self, ctx:vypaParser.ProgramContext):
         self.code_table.addCode("LABEL", "__program_end__")
-        self.code_table.translate() 
+        targetc = self.code_table.translate() 
+        self.file.write(targetc)
+        self.file.close()
 
 
     # Enter a parse tree produced by vypaParser#class_definition.

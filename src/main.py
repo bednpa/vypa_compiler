@@ -23,6 +23,15 @@ def main(argv):
     except Exception as e:
         print(e.args[1], argv[1], file=sys.stderr)
         exit(e.args[0])
+    
+    try:
+        if len(argv) > 2:
+            f = open(argv[2], "a")
+        else:
+            f = open("out.vc", "a")
+    except:
+        exit(SUCCESS)
+        
     lexer = vypaLexer(input_stream) 
     stream = CommonTokenStream(lexer)
     
@@ -44,7 +53,7 @@ def main(argv):
         print(e.what, file=sys.stderr)
         exit(e.err_code)
  
-    printer = customListener(func_table, code_table)
+    printer = customListener(func_table, code_table, f)
     walker = ParseTreeWalker()
     try:
         walker.walk(printer, tree)

@@ -223,4 +223,4 @@ class interCode:
             if row["op"] == "JUMPNZ" or row["op"] == "CALL":
                 generator.generateBinaryOperation(row["op"], row["o1"], row["o2"])
                 
-        print(generator.target_code)
+        return generator.target_code
