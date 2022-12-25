@@ -1,0 +1,14 @@
+//While test
+
+void main(void)
+{
+	int x;
+	x = 10;	
+
+    while(x <= 116) 
+    {
+        x = x + 1;
+    }
+
+    print(x);
+}

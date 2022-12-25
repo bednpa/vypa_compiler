@@ -1,0 +1,8 @@
+//Function test
+
+void main(void)
+{
+    string x;
+    x = "abc" + "def";
+    print(x);
+}

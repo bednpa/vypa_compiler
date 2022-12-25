@@ -1,10 +1,10 @@
 Running available tests ...
 *********************************
-test name: ./tests/test_func.in
-description: Function test
-- - - - - - - - - - - - - - - - -
-*********************************
 test name: ./tests/test.in
 description: test
+- - - - - - - - - - - - - - - - -
+*********************************
+test name: ./tests/test_print.in
+description: Print test
 - - - - - - - - - - - - - - - - -
 *********************************
