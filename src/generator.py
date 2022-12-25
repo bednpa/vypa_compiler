@@ -1,3 +1,9 @@
+#
+# Task: Compiler for VYPlanguage
+# Author(s): Pavel Bednar (xbedna73), Samuel Gajdos (xgajdo26)
+# Description: Implementation of Target code generator.
+#
+
 class Generator:
 
     def __init__(self):
@@ -12,10 +18,6 @@ class Generator:
                              "ALIAS FP $7\n\n"
                              "JUMP main\n\n"
                              ""
-                             # TODO: Concat, substr
-                             # Take c code for those functions and generate code for them
-                             # https://www.programmingsimplified.com/c/source-code/c-substring
-                             # https://www.geeksforgeeks.org/concatenating-two-strings-in-c/
                              "LABEL readInt\n"
                              "ADDI $SP, $SP, 1\n"
                              "SET $FP, $SP\n"
@@ -114,5 +116,3 @@ class Generator:
 
     def generateBinaryOperation(self, op, o1, o2):
         self.target_code += "{} {}, {}\n".format(op, o1, o2)
-
-        

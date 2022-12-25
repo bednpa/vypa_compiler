@@ -53,8 +53,6 @@ class customListener(vypaListener):
 
     # Exit a parse tree produced by vypaParser#program.
     def exitProgram(self, ctx:vypaParser.ProgramContext):
-        # self.func_table.dumpAll()
-        
         self.code_table.addCode("LABEL", "__program_end__")
         self.code_table.translate() 
 
@@ -83,7 +81,6 @@ class customListener(vypaListener):
         self.act_func = name
 
         self.code_table.addFunctionDefinitionCode(name)
-        # self.code_table.putParamsToTable(self.func_table.getFuncParams(name))
 
     # Exit a parse tree produced by vypaParser#function_definition.
     def exitFunction_definition(self, ctx:vypaParser.Function_definitionContext):

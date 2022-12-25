@@ -1,15 +1,17 @@
+#
+# Task: Compiler for VYPlanguage
+# Author(s): Pavel Bednar (xbedna73), Samuel Gajdos (xgajdo26)
+# Description: Implementation of Intermediate code generator.
+#
 from generator import Generator
 
 
 class interCode:
     def __init__(self):
         self.code = []
-        
         self.address_dict = {}
         self.frame_pointer = 0
         self.stack_pointer = 0
-
-        
         
     def addCode(self, op, o1=None, o2=None, o3=None):
         self.code.append({"op": op, "o1": o1, "o2": o2, "o3": o3})
@@ -223,6 +225,4 @@ class interCode:
             if row["op"] == "JUMPNZ" or row["op"] == "CALL":
                 generator.generateBinaryOperation(row["op"], row["o1"], row["o2"])
                 
-
-
         print(generator.target_code)
