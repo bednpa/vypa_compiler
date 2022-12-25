@@ -1,4 +1,4 @@
-//Function test
+//Function test parameters
 
 int func(int a) 
 {

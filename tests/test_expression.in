@@ -1,0 +1,8 @@
+//Expression test
+
+void main(void)
+{
+    int x;
+    x = (5 + 10 - 2 + 42) * 4 - 85;
+    print(x);
+}
