@@ -442,12 +442,6 @@ class customListener(vypaListener):
         elif ctx.OR():
             self.expr_check[-1].addOp("||")
             self.code_table.addBinaryOperationCode("OR") 
-            
-        elif ctx.expr_func_call():
-            pass    
-            
-        else:
-            raise unexpectedError() # expression, not sure about this TODO
         
         
     # Enter a parse tree produced by vypaParser#expr_func_call.
