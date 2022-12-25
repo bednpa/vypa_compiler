@@ -493,9 +493,6 @@ class customListener(vypaListener):
         self.code_table.addCode("PUSHI", "$1")
 
 
-
-       
-
     # Enter a parse tree produced by vypaParser#casting.
     def enterCasting(self, ctx:vypaParser.CastingContext):
         pass
